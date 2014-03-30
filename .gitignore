@@ -5,9 +5,14 @@
 
 # Package Files #
 *.jar
+  #except the .jar in this folder; for easy sharing of imports
+  !/JARs
 *.war
 *.ear
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /bin
+
+# mac file system
+.DS_Store
