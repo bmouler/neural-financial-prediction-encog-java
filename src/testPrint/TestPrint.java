@@ -1,8 +1,9 @@
+package testPrint;
 import com.google.gson.Gson;
 
 public class TestPrint {
 	public static void main(String[] args) {
-		System.out.println("it works!");
+		System.out.println("Kevin was here!!");
 		
 		Gson gson = new Gson();
 	}
