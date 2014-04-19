@@ -1,26 +1,3 @@
-/*
- * Encog(tm) Java Examples v3.2
- * http://www.heatonresearch.com/encog/
- * https://github.com/encog/encog-java-examples
- *
- * Copyright 2008-2013 Heaton Research, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *   
- * For more information on Heaton Research copyrights, licenses 
- * and trademarks visit:
- * http://www.heatonresearch.com/copyright
- */
 package KevinThread;
 
 import java.io.File;
@@ -32,51 +9,79 @@ import org.encog.ml.data.market.MarketDataType;
 import org.encog.ml.data.market.MarketMLDataSet;
 import org.encog.ml.data.market.loader.MarketLoader;
 import org.encog.ml.data.market.loader.YahooFinanceLoader;
+import org.encog.ml.data.temporal.TemporalDataDescription;
+import org.encog.ml.data.temporal.TemporalMLDataSet;
+import org.encog.ml.data.temporal.TemporalPoint;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.persist.EncogDirectoryPersistence;
+import org.encog.util.arrayutil.NormalizationAction;
+import org.encog.util.arrayutil.NormalizedField;
+import org.encog.util.csv.ReadCSV;
 import org.encog.util.simple.EncogUtility;
 
-/**
- * Build the training data for the prediction and store it in an Encog file for
- * later training.
- * 
- * @author jeff
- * 
- */
 public class BuildTraining {
 
-	public static void generate(File dataDir) {
+	public static TemporalMLDataSet createTraining(
+			File rawFile,
+			int INPUT_WINDOW_SIZE,
+			int PREDICT_WINDOW_SIZE) {
 		
-		final MarketLoader loader = new YahooFinanceLoader();
-		final MarketMLDataSet market = new MarketMLDataSet(loader,
-				__Config.INPUT_WINDOW, __Config.PREDICT_WINDOW);
-		final MarketDataDescription desc = new MarketDataDescription(
-				__Config.TICKER, MarketDataType.ADJUSTED_CLOSE, true, true);
-		market.addDescription(desc);
+		TemporalMLDataSet trainingData = initDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
+		ReadCSV csv = new ReadCSV(rawFile.toString(), true, ' ');
+		while (csv.next()) {
+			int year = csv.getInt(0);
+			int month = csv.getInt(1);
+			double sunSpotNum = csv.getDouble(2);
+			double dev = csv.getDouble(3);
 
-		Calendar end = new GregorianCalendar();// end today
-		Calendar begin = (Calendar) end.clone();// begin 30 days ago
+			// we need a sequence number to sort the data. Here we just use
+			// year * 100 + month, which produces output like "201301" for
+			// January, 2013.
+			int sequenceNumber = (year * 100) + month;
+
+			TemporalPoint point = new TemporalPoint(trainingData
+					.getDescriptions().size());
+			point.setSequence(sequenceNumber);
+			point.setData(0, normSSN.normalize(sunSpotNum) );
+			point.setData(1, normDEV.normalize(dev) );
+			trainingData.getPoints().add(point);
+		}
+		csv.close();
 		
-		// Gather training data for the last 2 years, stopping 60 days short of today.
-		// The 60 days will be used to evaluate prediction.
-		begin.add(Calendar.DATE, -60);
-		end.add(Calendar.DATE, -60);
-		begin.add(Calendar.YEAR, -2);
-		
-		market.load(begin.getTime(), end.getTime());
-		market.generate();
-		EncogUtility.saveEGB(new File(dataDir,__Config.TRAINING_FILE), market);
+		// generate the time-boxed data
+		trainingData.generate();
+		return trainingData;
+	}
+	
+	/**
+	 * Used to normalize the SSN (sun spot number) from a range of 0-300 
+	 * to 0-1.
+	 */
+	public static NormalizedField normSSN = new NormalizedField(
+			NormalizationAction.Normalize, "ssn", 300, 0, 1, 0);
+	
+	/**
+	 * Used to normalize the dev from a range of 0-100 
+	 * to 0-1.
+	 */
+	public static NormalizedField normDEV = new NormalizedField(
+			NormalizationAction.Normalize, "dev", 100, 0, 1, 0);
+	
+	public static TemporalMLDataSet initDataSet(int INPUT_WINDOW_SIZE, int PREDICT_WINDOW_SIZE) {
+		// create a temporal data set
+		TemporalMLDataSet dataSet = new TemporalMLDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
-		// create a network
-		final BasicNetwork network = EncogUtility.simpleFeedForward(
-				market.getInputSize(), 
-				__Config.HIDDEN1_COUNT, 
-				__Config.HIDDEN2_COUNT, 
-				market.getIdealSize(), 
-				true);	
-
-		// save the network and the training
-		EncogDirectoryPersistence.saveObject(new File(dataDir,__Config.NETWORK_FILE), network);
+		// we are dealing with two columns.
+		// The first is the sunspot number. This is both an input (used to
+		// predict) and an output (we want to predict it), so true,true.
+		TemporalDataDescription sunSpotNumberDesc = new TemporalDataDescription(TemporalDataDescription.Type.RAW, true, true);
+					
+		// The second is the standard deviation for the month. This is an
+		// input (used to predict) only, so true,false.
+		TemporalDataDescription standardDevDesc = new TemporalDataDescription(TemporalDataDescription.Type.RAW, true, false);
+		dataSet.addDescription(sunSpotNumberDesc);
+		dataSet.addDescription(standardDevDesc);
+		return dataSet;
 	}
 }

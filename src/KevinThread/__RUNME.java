@@ -1,53 +1,72 @@
-/*
- * Encog(tm) Java Examples v3.2
- * http://www.heatonresearch.com/encog/
- * https://github.com/encog/encog-java-examples
- *
- * Copyright 2008-2013 Heaton Research, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *   
- * For more information on Heaton Research copyrights, licenses 
- * and trademarks visit:
- * http://www.heatonresearch.com/copyright
- */
 package KevinThread;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 import org.encog.Encog;
+import org.encog.ml.MLRegression;
+import org.encog.ml.data.temporal.TemporalMLDataSet;
+import org.encog.ml.factory.MLMethodFactory;
+import org.encog.ml.factory.MLTrainFactory;
 
-/**
- * Use the saved market neural network, and now attempt to predict for today,
- * and the last 60 days and see what the results are.
- */
 public class __RUNME {
 
-	public static void main(String[] args) {
+	/*
+	 * This is the only setting for this file. All other settings are specified in the properties
+	 * file in this directory. The file must be in the root of the workingDir and be named
+	 * 'config.properties'.
+	 */
+	final static String WORKING_DIR = "./data/EncogFiles/PropertiesTest";
 
-		File dataDir = new File("./data/EncogFiles/KevinThreadTest");
+	public static void main(String[] args) throws Exception {
 
-		BuildTraining.generate(dataDir);
+		// load properties file
+		Properties props = new Properties();
+		try {
+			props.load(new FileInputStream(WORKING_DIR + "/config.properties"));
+		} catch (Exception e) {
+			throw new Exception("Error while attempting to load propsFile:\n  " + e.getMessage());
+		}
 
-		// Encog.getInstance().shutdown();
+		// add workingDir so we do not need to include it in the config.properties
+		props.put("WORKING_DIR", WORKING_DIR);
 
-		Train.train(dataDir);
+		// print properties to console
+		System.out.println("======");
+		System.out.println("Properties File found. Configs are:");
+		for (String key : props.stringPropertyNames()) {
+			String value = props.getProperty(key);
+			System.out.println("  " + key + " => " + value);
+		}
+		System.out.println("======");
 
-		// Encog.getInstance().shutdown();
+		// get data, then train and evaluate the neural network
+		try {
+			
 
-		Evaluate.evaluate(dataDir);
+			// Step 1. Create training data
+			TemporalMLDataSet trainingData = BuildTraining.createTraining(rawFile,
+					Integer.parseInt(props.getProperty("INPUT_WINDOW_SIZE")),
+					Integer.parseInt(props.getProperty("PREDICT_WINDOW_SIZE")));
 
-		Encog.getInstance().shutdown();
+			// Step 2. Create and train the model.
+			// All sorts of models can be used here, see the XORFactory
+			// example for more info.
+			MLRegression model = Train.trainModel(trainingData, MLMethodFactory.TYPE_FEEDFORWARD,
+					"?:B->SIGMOID->25:B->SIGMOID->?", MLTrainFactory.TYPE_RPROP, "");
+
+			// Now predict
+			Predict.predict(rawFile, model,
+					Integer.parseInt(props.getProperty("INPUT_WINDOW_SIZE")),
+					Integer.parseInt(props.getProperty("PREDICT_WINDOW_SIZE")));
+
+			Encog.getInstance().shutdown();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 }

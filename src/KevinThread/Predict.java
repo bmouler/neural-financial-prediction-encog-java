@@ -1,61 +1,63 @@
-/*
- * Encog(tm) Java Examples v3.2
- * http://www.heatonresearch.com/encog/
- * https://github.com/encog/encog-java-examples
- *
- * Copyright 2008-2013 Heaton Research, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *   
- * For more information on Heaton Research copyrights, licenses 
- * and trademarks visit:
- * http://www.heatonresearch.com/copyright
- */
 package KevinThread;
 
 import java.io.File;
 
 import org.encog.Encog;
+import org.encog.ml.MLRegression;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.temporal.TemporalMLDataSet;
+import org.encog.ml.data.temporal.TemporalPoint;
+import org.encog.util.csv.ReadCSV;
 
 
-
-/**
- * Use the saved market neural network, and now attempt to predict for today, and the
- * last 60 days and see what the results are.
- */
 public class Predict {
-		
-	public static void main(String[] args)
-	{		
-		if( args.length<1 ) {
-			System.out.println("MarketPredict [data dir] [generate/train/incremental/evaluate]");
-		}
-		else
-		{
-			File dataDir = new File(args[0]);
-			if( args[1].equalsIgnoreCase("generate") ) {
-				BuildTraining.generate(dataDir);
-			} 
-			else if( args[1].equalsIgnoreCase("train") ) {
-				Train.train(dataDir);
-			} 
-			else if( args[1].equalsIgnoreCase("evaluate") ) {
-				Evaluate.evaluate(dataDir);
-			} else if( args[1].equalsIgnoreCase("prune") ) {
-				Prune.incremental(dataDir);
-			} 
-			Encog.getInstance().shutdown();
-		}
-	}
 	
+	public static TemporalMLDataSet predict(
+			File rawFile,
+			MLRegression model,
+			int INPUT_WINDOW_SIZE,
+			int PREDICT_WINDOW_SIZE) {
+		// You can also use the TemporalMLDataSet for prediction.  We will not use "generate"
+		// as we do not want to generate an entire training set.  Rather we pass it each sun spot 
+		// ssn and dev and it will produce the input to the model, once there is enough data.
+		TemporalMLDataSet trainingData = BuildTraining.initDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
+		ReadCSV csv = new ReadCSV(rawFile.toString(), true, ' ');
+		while (csv.next()) {
+			int year = csv.getInt(0);
+			int month = csv.getInt(1);
+			double sunSpotNum = csv.getDouble(2);
+			double dev = csv.getDouble(3);
+			
+			// do we have enough data for a prediction yet?
+			if( trainingData.getPoints().size()>=trainingData.getInputWindowSize() ) {
+				// Make sure to use index 1, because the temporal data set is always one ahead
+				// of the time slice its encoding.  So for RAW data we are really encoding 0.
+				MLData modelInput = trainingData.generateInputNeuralData(1);
+				MLData modelOutput = model.compute(modelInput);
+				double ssn = BuildTraining.normSSN.deNormalize(modelOutput.getData(0));
+				System.out.println(year + ":Predicted=" + ssn + ",Actual=" + sunSpotNum );
+				
+				// Remove the earliest training element.  Unlike when we produced training data,
+				// we do not want to build up a large data set.  We just add enough data points to produce
+				// input to the model.
+				trainingData.getPoints().remove(0);
+			}
+			
+			// we need a sequence number to sort the data. Here we just use
+			// year * 100 + month, which produces output like "201301" for
+			// January, 2013.
+			int sequenceNumber = (year * 100) + month;
+
+			TemporalPoint point = new TemporalPoint(trainingData.getDescriptions().size());
+			point.setSequence(sequenceNumber);
+			point.setData(0, BuildTraining.normSSN.normalize(sunSpotNum) );
+			point.setData(1, BuildTraining.normDEV.normalize(dev) );
+			trainingData.getPoints().add(point);
+		}
+		csv.close();
+		
+		// generate the time-boxed data
+		trainingData.generate();
+		return trainingData;
+	}
 }
