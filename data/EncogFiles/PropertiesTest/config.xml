@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment></comment>
+	<entry key="INPUT_WINDOW_SIZE">12</entry>
+	<entry key="PREDICT_WINDOW_SIZE">1</entry>
+</properties>
