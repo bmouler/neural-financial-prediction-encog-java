@@ -57,8 +57,9 @@ public class __RUNME {
 					MLTrainFactory.TYPE_RPROP, trainerArgs, TARGET_ERROR, DEBUG_LEVEL);
 
 			// Step 3. Predict
-			// Predict.predict(model, EVALUATE_START, EVALUATE_END, INPUT_WINDOW_SIZE);
-			
+			Predict.predict(temporalDataset, model, DEBUG_LEVEL, INPUT_WINDOW_SIZE,
+					PREDICT_WINDOW_SIZE);
+
 			// shutdown
 			Encog.getInstance().shutdown();
 

@@ -309,7 +309,7 @@ public class DataIngester {
 			System.out.println("Completed data import");
 	}
 
-	public TemporalMLDataSet makeTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
+	public TemporalMLDataSet initTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
 			int PREDICT_WINDOW_SIZE) {
 
 		// start message
@@ -323,6 +323,19 @@ public class DataIngester {
 		TemporalDataDescription desc = new TemporalDataDescription(
 				TemporalDataDescription.Type.RAW, true, true);
 		result.addDescription(desc);
+
+		return result;
+	}
+
+	public TemporalMLDataSet makeTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
+			int PREDICT_WINDOW_SIZE) {
+
+		// start message
+		if (DEBUG_LEVEL >= 1)
+			System.out.println("\n\nStarting transform to temporal dataset");
+
+		TemporalMLDataSet result = initTemporalDataSet(DEBUG_LEVEL, INPUT_WINDOW_SIZE,
+				PREDICT_WINDOW_SIZE);
 
 		// transform to TemporalPoint and insert into TemporalMLDataSet
 		for (int dataNum = 0; dataNum < m_dates.length; dataNum++) {
@@ -365,13 +378,13 @@ public class DataIngester {
 	}
 
 	public static void main(String args[]) {
-		String[] DATA_FILE_NAMES = { "./data/stockPredictorDefaultData/INDEX_GSPC.csv",
-				"./data/stockPredictorDefaultData/DGS2.csv",
-				"./data/stockPredictorDefaultData/DGS10.csv",
-				"./data/stockPredictorDefaultData/EURUSD.csv",
-				"./data/stockPredictorDefaultData/FUTURE_CL1.csv",
-				"./data/stockPredictorDefaultData/INDEX_RTS_RS.csv",
-				"./data/stockPredictorDefaultData/JPYUSD.csv" };
+		String[] DATA_FILE_NAMES = { "./data/dataIngesterDefaultData/INDEX_GSPC.csv",
+				"./data/dataIngesterDefaultData/DGS2.csv",
+				"./data/dataIngesterDefaultData/DGS10.csv",
+				"./data/dataIngesterDefaultData/EURUSD.csv",
+				"./data/dataIngesterDefaultData/FUTURE_CL1.csv",
+				"./data/dataIngesterDefaultData/INDEX_RTS_RS.csv",
+				"./data/dataIngesterDefaultData/JPYUSD.csv" };
 
 		// 2 means print everything
 		int DEBUG_LEVEL = 2;
