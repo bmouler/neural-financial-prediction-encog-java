@@ -38,6 +38,16 @@ public class DataIngester {
 
 	// Names of data series
 	private String[] m_dataNames;
+	public int getPredictFieldIndex(String PREDICT_FILE, String PREDICT_LABEL) {
+		int predictedField = -1;
+		for (int i = 0; i < m_dataNames.length; i++) {
+			if (m_dataNames[i].startsWith(PREDICT_FILE) && m_dataNames[i].endsWith(PREDICT_LABEL)) {
+				predictedField = i;
+				continue;
+			}
+		}
+		return predictedField;
+	}
 
 	// Dates common to all data series
 	private String[] m_dates;
@@ -347,7 +357,7 @@ public class DataIngester {
 
 		// complete message
 		if (DEBUG_LEVEL >= 1)
-			System.out.println("Completed data import");
+			System.out.println("\n\nCompleted data import");
 	}
 
 	public TemporalMLDataSet initTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,

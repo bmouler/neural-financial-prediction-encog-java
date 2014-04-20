@@ -39,9 +39,9 @@ public class __RUNME {
 		String ACTIVATION_FUNCTION = Props.GetString(props, "ACTIVATION_FUNCTION");
 		double TARGET_ERROR = Props.GetDouble(props, "TARGET_ERROR");
 		// predict
-		// TODO needed?
-		// int EVALUATE_START = Props.GetInt(props, "EVALUATE_START");
-		// int EVALUATE_END = Props.GetInt(props, "EVALUATE_END");
+		String PREDICT_FILE = Props.GetString(props, "PREDICT_FILE");
+		String PREDICT_LABEL = Props.GetString(props, "PREDICT_LABEL");
+
 
 		// get data, then train and evaluate the neural network
 		try {
@@ -49,6 +49,11 @@ public class __RUNME {
 			DataIngester dataIngester = new DataIngester();
 			dataIngester.createData(DEBUG_LEVEL, DATA_FILES, NORMALIZED_LOW, NORMALIZED_HIGH);
 			int numberOfDataSeries = dataIngester.getNumberOfDataSeries();
+			int predictFieldIndex = dataIngester.getPredictFieldIndex(PREDICT_FILE, PREDICT_LABEL);
+			if (predictFieldIndex < 0) {
+				throw new Exception("Predict field not found.");
+			}
+				
 			// get actual low/high values for use in prediction output
 			double[] actualLowValues = dataIngester.getActualLowValues();
 			double[] actualHighValues = dataIngester.getActualHighValues();
@@ -65,7 +70,7 @@ public class __RUNME {
 			// Step 3. Predict
 			Predict.predict(temporalDataset, model, DEBUG_LEVEL, INPUT_WINDOW_SIZE,
 					PREDICT_WINDOW_SIZE, NORMALIZED_LOW, NORMALIZED_HIGH, actualLowValues,
-					actualHighValues, numberOfDataSeries);
+					actualHighValues, numberOfDataSeries, predictFieldIndex);
 
 			// shutdown
 			Encog.getInstance().shutdown();

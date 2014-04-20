@@ -1,13 +1,9 @@
 package KevinThread;
 
-import java.util.Iterator;
-
 import org.encog.ml.MLRegression;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.temporal.TemporalMLDataSet;
 import org.encog.ml.data.temporal.TemporalPoint;
-import org.encog.util.arrayutil.NormalizationAction;
-import org.encog.util.arrayutil.NormalizedField;
 
 import DataIngester.DataIngester;
 
@@ -16,7 +12,7 @@ public class Predict {
 	public static void predict(TemporalMLDataSet temporalDataset, MLRegression model,
 			int DEBUG_LEVEL, int INPUT_WINDOW_SIZE, int PREDICT_WINDOW_SIZE, double NORMALIZED_LOW,
 			double NORMALIZED_HIGH, double[] actualLowValues, double[] actualHighValues,
-			int numberOfDataSeries) {
+			int numberOfDataSeries, int predictFieldIndex) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -55,12 +51,14 @@ public class Predict {
 				MLData modelOutput = model.compute(modelInput);
 
 				// TODO denormalize output to screen, partially complete
-				// double predicted = normPrice.deNormalize(modelOutput.getData(0));
+				// double predicted = normPrice.deNormalize(modelOutput.getData(predictFieldIndex));
+				double predicted = modelOutput.getData(predictFieldIndex);
+				double actual = temporalDataset.getPoints().get(i).getData(predictFieldIndex);
 
 				// TODO need to figure out what the output actual means to go any further
 				if (DEBUG_LEVEL >= 1) {
 					System.out.printf(" %5d : %5.8f : %5.8f : %6.2f \n", point.getSequence(),
-							modelOutput.getData(0), 0f, 0f, 0f);
+							predicted, actual, 0f, 0f);
 					// + " : Actual = " + actual);
 				}
 

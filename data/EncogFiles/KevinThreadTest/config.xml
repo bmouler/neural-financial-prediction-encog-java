@@ -20,7 +20,7 @@
 	<entry key="DATA_FILE_6">./data/dataIngesterDefaultData/JPYUSD.csv</entry>
 
 	<!-- Temporal dataset -->
-	<entry key="NORMALIZED_LOW">-1.0</entry>
+	<entry key="NORMALIZED_LOW">0</entry>
 	<entry key="NORMALIZED_HIGH">1.0</entry>
 	<entry key="INPUT_WINDOW_SIZE">12</entry>
 	<entry key="PREDICT_WINDOW_SIZE">1</entry>
@@ -30,6 +30,8 @@
 	<entry key="TARGET_ERROR">0.35</entry>
 		
 	<!-- Predict -->
+	<entry key="PREDICT_FILE">FUTURE_CL1</entry>
+	<entry key="PREDICT_LABEL">Open</entry>
 <!-- 	<entry key="EVALUATE_START">0</entry> -->
 <!-- 	<entry key="EVALUATE_END">100</entry> -->
 	
