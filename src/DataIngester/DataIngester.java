@@ -8,9 +8,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.encog.engine.network.activation.ActivationBiPolar;
+import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.temporal.TemporalDataDescription;
 import org.encog.ml.data.temporal.TemporalMLDataSet;
 import org.encog.ml.data.temporal.TemporalPoint;
+import org.encog.ml.train.MLTrain;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 //import java.text.NumberFormat;
 //
 //import org.encog.ml.data.MLData;
@@ -382,5 +389,23 @@ public class DataIngester {
 		TemporalMLDataSet temporal = null;
 		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1);
 
+		// remember to add desired output values into the training set
+		
+		// basic network 3-3-1
+		BasicNetwork network = new BasicNetwork();
+		network.addLayer(new BasicLayer(null,true,3));
+		network.addLayer(new BasicLayer(new ActivationSigmoid(),true,3));
+		network.addLayer(new BasicLayer(new ActivationBiPolar(),false,1));
+		network.getStructure().finalizeStructure();
+		network.reset(); // randomize initial weights
+		MLDataSet trainingSet = temporal;
+		final MLTrain train = new ResilientPropagation(network, trainingSet); // could use other training method
+		
+		do {
+			train.iteration();
+		} while (train.getError() > 0.001);
+		
+		double error = network.calculateError(trainingSet);
+		System.out.println("Network trained until error = "+error);
 	}
 }
