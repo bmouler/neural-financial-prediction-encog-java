@@ -14,7 +14,7 @@ public class __RUNME {
 	 * file in this directory. The file must be in the root of the workingDir and be named
 	 * as described in PROPS_FILE.
 	 */
-	final static String WORKING_DIR = "./data/EncogFiles/PropertiesTest"; // no backslash
+	final static String WORKING_DIR = "./data/EncogFiles/KevinThreadTest"; // no backslash
 	final static String PROPS_FILE = "config.xml";
 	final static boolean printPropsDebugToConsole = true; // required because props are not loaded
 
