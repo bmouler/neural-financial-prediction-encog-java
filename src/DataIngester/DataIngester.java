@@ -241,32 +241,63 @@ public class DataIngester {
 		}
 	}
 
+	// for saving low/high for each data set
+	// needed for denormalized printing
+	double[] actualLowValues;
+	double[] actualHighValues;
+
+	public double[] getActualLowValues() {
+		return actualLowValues;
+	}
+
+	public double[] getActualHighValues() {
+		return actualHighValues;
+	}
+
 	// Normalize data to be within -1 and +1 in each data set
-	public void normalizeData(double NORMALIZED_LOW, double NORMALIZED_HIGH) {
+	public void normalizeData(int DEBUG_LEVEL, double NORMALIZED_LOW, double NORMALIZED_HIGH) {
 		NormalizeArray norm = new NormalizeArray();
 		norm.setNormalizedLow(NORMALIZED_LOW);
 		norm.setNormalizedHigh(NORMALIZED_HIGH);
 
+		actualLowValues = new double[m_data.length];
+		actualHighValues = new double[m_data.length];
+
+		if (DEBUG_LEVEL >= 2) {
+			System.out.println("\n\nLow and high actual values for each dataset:");
+		}
+
 		for (int dataSetNum = 0; dataSetNum < m_data.length; ++dataSetNum) {
-			// Find min and max of data set
-			double minVal = m_data[dataSetNum][0];
-			double maxVal = m_data[dataSetNum][0];
+			if (DEBUG_LEVEL >= 2) {
+				// Find min and max of data set
+				double minVal = m_data[dataSetNum][0];
+				double maxVal = m_data[dataSetNum][0];
 
-			for (int dataNum = 0; dataNum < m_dates.length; ++dataNum) {
-				if (minVal > m_data[dataSetNum][dataNum]) {
-					minVal = m_data[dataSetNum][dataNum];
+				for (int dataNum = 0; dataNum < m_dates.length; ++dataNum) {
+					if (minVal > m_data[dataSetNum][dataNum]) {
+						minVal = m_data[dataSetNum][dataNum];
+					}
+
+					if (maxVal < m_data[dataSetNum][dataNum]) {
+						maxVal = m_data[dataSetNum][dataNum];
+					}
 				}
 
-				if (maxVal < m_data[dataSetNum][dataNum]) {
-					maxVal = m_data[dataSetNum][dataNum];
-				}
+				// save for later reference
+				actualLowValues[dataSetNum] = minVal;
+				actualHighValues[dataSetNum] = maxVal;
+
+				System.out.printf("  %d : low = %f : high = %f :\n", dataSetNum,
+						actualLowValues[dataSetNum], actualHighValues[dataSetNum]);
 			}
 
 			m_data[dataSetNum] = norm.process(m_data[dataSetNum]);
 		}
+
 	}
 
-	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles, double NORMALIZED_LOW, double NORMALIZED_HIGH) {
+	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles, double NORMALIZED_LOW,
+			double NORMALIZED_HIGH) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -274,7 +305,7 @@ public class DataIngester {
 
 		// read in and normalize data
 		readData(DEBUG_LEVEL, listOfDataFiles);
-		normalizeData(NORMALIZED_LOW, NORMALIZED_HIGH);
+		normalizeData(DEBUG_LEVEL, NORMALIZED_LOW, NORMALIZED_HIGH);
 
 		// list of data series names printout
 		if (DEBUG_LEVEL >= 1) {
@@ -314,7 +345,7 @@ public class DataIngester {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
-			System.out.println("\n\nStarting transform to temporal dataset");
+			System.out.println("Starting init for temporal dataset");
 
 		// create blank TemporalMLDataSet
 		TemporalMLDataSet result = new TemporalMLDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
@@ -323,6 +354,10 @@ public class DataIngester {
 		TemporalDataDescription desc = new TemporalDataDescription(
 				TemporalDataDescription.Type.RAW, true, true);
 		result.addDescription(desc);
+		
+		// complete message
+		if (DEBUG_LEVEL >= 1)
+			System.out.println("Completed init for temporal dataset");
 
 		return result;
 	}
