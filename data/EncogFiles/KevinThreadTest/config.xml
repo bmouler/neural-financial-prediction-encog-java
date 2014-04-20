@@ -25,7 +25,8 @@
 
 	<!-- Training -->
 	<entry key="ACTIVATION_FUNCTION">?:B->SIGMOID->25:B->SIGMOID->?</entry>
-	
+	<entry key="TARGET_ERROR">0.35</entry>
+		
 	<!-- Predict -->
 	<entry key="EVALUATE_START">0</entry>
 	<entry key="EVALUATE_END">100</entry>
