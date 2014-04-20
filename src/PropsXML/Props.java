@@ -132,4 +132,16 @@ public class Props {
 		
 		return Integer.parseInt(value);
 	}
+	
+	static public float GetFloat(Properties props, String label) {
+		String value = props.getProperty(label);
+		
+		return Float.parseFloat(value);
+	}
+	
+	static public double GetDouble(Properties props, String label) {
+		String value = props.getProperty(label);
+		
+		return Double.parseDouble(value);
+	}
 }
