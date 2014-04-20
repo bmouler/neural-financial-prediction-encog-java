@@ -45,6 +45,9 @@ public class DataIngester {
 	// Data for all data series; leftmost index corresponds to data series
 	// number
 	private double[][] m_data;
+	public int getNumberOfDataSeries() {
+		return m_data.length;
+	}
 
 	// Read in, temporally sort in chronologically-increasing order, and remove
 	// any data points taken at dates not common to all data series
@@ -348,7 +351,7 @@ public class DataIngester {
 	}
 
 	public TemporalMLDataSet initTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
-			int PREDICT_WINDOW_SIZE) {
+			int PREDICT_WINDOW_SIZE, int numberOfDataSeries) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -358,10 +361,12 @@ public class DataIngester {
 		TemporalMLDataSet result = new TemporalMLDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
 		// create description of the TemporalMLDataSet
-		TemporalDataDescription desc = new TemporalDataDescription(
-				TemporalDataDescription.Type.RAW, true, true);
-		result.addDescription(desc);
-		
+		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
+			TemporalDataDescription desc = new TemporalDataDescription(
+					TemporalDataDescription.Type.RAW, true, true);
+			result.addDescription(desc);
+		}
+
 		// complete message
 		if (DEBUG_LEVEL >= 1)
 			System.out.println("Completed init for temporal dataset");
@@ -377,7 +382,7 @@ public class DataIngester {
 			System.out.println("\n\nStarting transform to temporal dataset");
 
 		TemporalMLDataSet result = initTemporalDataSet(DEBUG_LEVEL, INPUT_WINDOW_SIZE,
-				PREDICT_WINDOW_SIZE);
+				PREDICT_WINDOW_SIZE, m_data.length);
 
 		// transform to TemporalPoint and insert into TemporalMLDataSet
 		for (int dataNum = 0; dataNum < m_dates.length; dataNum++) {
@@ -438,22 +443,23 @@ public class DataIngester {
 		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1);
 
 		// remember to add desired output values into the training set
-		
+
 		// basic network 3-3-1
 		BasicNetwork network = new BasicNetwork();
-		network.addLayer(new BasicLayer(null,true,3));
-		network.addLayer(new BasicLayer(new ActivationSigmoid(),true,3));
-		network.addLayer(new BasicLayer(new ActivationBiPolar(),false,1));
+		network.addLayer(new BasicLayer(null, true, 3));
+		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 3));
+		network.addLayer(new BasicLayer(new ActivationBiPolar(), false, 1));
 		network.getStructure().finalizeStructure();
 		network.reset(); // randomize initial weights
 		MLDataSet trainingSet = temporal;
-		final MLTrain train = new ResilientPropagation(network, trainingSet); // could use other training method
-		
+		final MLTrain train = new ResilientPropagation(network, trainingSet); // could use other
+																				// training method
+
 		do {
 			train.iteration();
 		} while (train.getError() > 0.001);
-		
+
 		double error = network.calculateError(trainingSet);
-		System.out.println("Network trained until error = "+error);
+		System.out.println("Network trained until error = " + error);
 	}
 }

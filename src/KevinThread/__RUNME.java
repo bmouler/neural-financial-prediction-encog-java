@@ -48,6 +48,7 @@ public class __RUNME {
 			// Step 1. Create training data
 			DataIngester dataIngester = new DataIngester();
 			dataIngester.createData(DEBUG_LEVEL, DATA_FILES, NORMALIZED_LOW, NORMALIZED_HIGH);
+			int numberOfDataSeries = dataIngester.getNumberOfDataSeries();
 			// get actual low/high values for use in prediction output
 			double[] actualLowValues = dataIngester.getActualLowValues();
 			double[] actualHighValues = dataIngester.getActualHighValues();
@@ -64,7 +65,7 @@ public class __RUNME {
 			// Step 3. Predict
 			Predict.predict(temporalDataset, model, DEBUG_LEVEL, INPUT_WINDOW_SIZE,
 					PREDICT_WINDOW_SIZE, NORMALIZED_LOW, NORMALIZED_HIGH, actualLowValues,
-					actualHighValues);
+					actualHighValues, numberOfDataSeries);
 
 			// shutdown
 			Encog.getInstance().shutdown();

@@ -15,7 +15,8 @@ public class Predict {
 
 	public static void predict(TemporalMLDataSet temporalDataset, MLRegression model,
 			int DEBUG_LEVEL, int INPUT_WINDOW_SIZE, int PREDICT_WINDOW_SIZE, double NORMALIZED_LOW,
-			double NORMALIZED_HIGH, double[] actualLowValues, double[] actualHighValues) {
+			double NORMALIZED_HIGH, double[] actualLowValues, double[] actualHighValues,
+			int numberOfDataSeries) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -30,7 +31,7 @@ public class Predict {
 		// initialize a new TemporalMLDataSet with the same settings
 		DataIngester dataIngester = new DataIngester();
 		TemporalMLDataSet testSet = dataIngester.initTemporalDataSet(DEBUG_LEVEL,
-				INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
+				INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE, numberOfDataSeries);
 
 		// header for printout
 		if (DEBUG_LEVEL >= 1)
