@@ -173,7 +173,7 @@ public class DataIngester {
 
 			// Remove any data for date entries not common to all data sets
 			for (int dataSeriesNum = 0; dataSeriesNum < m_numDataSeries; ++dataSeriesNum) {
-				if (DEBUG_LEVEL >= 2)
+				if (DEBUG_LEVEL >= 1)
 					System.out.printf("  %2d out of %d\n", dataSeriesNum + 1, m_numDataSeries);
 
 				// Loop through each date element in each series
