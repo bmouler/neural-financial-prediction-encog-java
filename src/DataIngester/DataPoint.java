@@ -1,4 +1,4 @@
-package stockpredictor;
+package DataIngester;
 
 // Holds data point (i.e., date and datum pair); used only purposes of sorting
 // data
