@@ -1,88 +1,63 @@
 package KevinThread;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.encog.Encog;
-import org.encog.ml.MLRegression;
 import org.encog.ml.data.temporal.TemporalMLDataSet;
-import org.encog.ml.factory.MLMethodFactory;
-import org.encog.ml.factory.MLTrainFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
+import DataIngester.DataIngester;
+import PropsXML.Props;
 
 public class __RUNME {
 
 	/*
-	 * This is the only setting for this file. All other settings are specified in the properties
+	 * These are the only settings for this file. All other settings are specified in the properties
 	 * file in this directory. The file must be in the root of the workingDir and be named
-	 * 'config.xml'.
+	 * as described in PROPS_FILE.
 	 */
-	final static String WORKING_DIR = "./data/EncogFiles/PropertiesTest";
+	final static String WORKING_DIR = "./data/EncogFiles/PropertiesTest"; // no backslash
+	final static String PROPS_FILE = "config.xml";
+	final static boolean printPropsDebugToConsole = true; // required because props are not loaded
 
 	public static void main(String[] args) throws Exception {
 
-		// load properties file
-		Properties props = new Properties();
+		// load properties file and required values
+		Properties props = Props.LoadProps(printPropsDebugToConsole, WORKING_DIR, PROPS_FILE);
+		// debug printing
+		int DEBUG_LEVEL = Props.GetInt(props, "DEBUG_LEVEL");
+		// data files
+		String[] DATA_FILES = Props.GetArrayOfStrings(printPropsDebugToConsole, props,
+				"DATA_FILE_");
+		// temporal settings
+		int INPUT_WINDOW_SIZE = Props.GetInt(props, "INPUT_WINDOW_SIZE");
+		int PREDICT_WINDOW_SIZE = Props.GetInt(props, "PREDICT_WINDOW_SIZE");
+		// training
+		String ACTIVATION_FUNCTION = Props.GetString(props, "ACTIVATION_FUNCTION");
+		// predict
+		int EVALUATE_START = Props.GetInt(props, "EVALUATE_START");
+		int EVALUATE_END = Props.GetInt(props, "EVALUATE_END");
+
+		// get data, then train and evaluate the neural network
 		try {
-			File file = new File(WORKING_DIR + "/config.xml");
-			FileInputStream fileInput = new FileInputStream(file);
-			props.loadFromXML(fileInput);
-			fileInput.close();
-			
-			// add workingDir so we do not need to include it in the config.properties
-			props.put("WORKING_DIR", WORKING_DIR);
+			// Step 1. Create training data
+			DataIngester dataIngester = new DataIngester();
+			dataIngester.createData(DEBUG_LEVEL, DATA_FILES);
 
-			// print properties to console
-			System.out.println("======");
-			System.out.println("Properties File found. Configs are:");
-			Enumeration enuKeys = props.keys();
-			while (enuKeys.hasMoreElements()) {
-				String key = (String) enuKeys.nextElement();
-				String value = props.getProperty(key);
-				System.out.println(key + ": " + value);
-			}
-			System.out.println("======");
+			TemporalMLDataSet temporalDataset = dataIngester.makeTemporalDataSet(DEBUG_LEVEL,
+					INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			throw new Exception("Error while attempting to read config.xml: file not found.");
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new Exception("Error while attempting to read config.xml: io exception.");
-		}
-
-//		// get data, then train and evaluate the neural network
-//		try {
-//			
-//
-//			// Step 1. Create training data
-//			TemporalMLDataSet trainingData = BuildTraining.createTraining(rawFile,
-//					Integer.parseInt(props.getProperty("INPUT_WINDOW_SIZE")),
-//					Integer.parseInt(props.getProperty("PREDICT_WINDOW_SIZE")));
-//
 //			// Step 2. Create and train the model.
-//			// All sorts of models can be used here, see the XORFactory
-//			// example for more info.
-//			MLRegression model = Train.trainModel(trainingData, MLMethodFactory.TYPE_FEEDFORWARD,
-//					"?:B->SIGMOID->25:B->SIGMOID->?", MLTrainFactory.TYPE_RPROP, "");
+//			MLRegression model = Train.trainModel(temporalDataset, MLMethodFactory.TYPE_FEEDFORWARD,
+//					ACTIVATION_FUNCTION, MLTrainFactory.TYPE_RPROP, "");
 //
-//			// Now predict
-//			Predict.predict(rawFile, model,
-//					Integer.parseInt(props.getProperty("INPUT_WINDOW_SIZE")),
-//					Integer.parseInt(props.getProperty("PREDICT_WINDOW_SIZE")));
-//
+//			// Step 3. Predict
+//			Predict.predict(model, EVALUATE_START, EVALUATE_END, INPUT_WINDOW_SIZE);
+//			
+//			// shutdown
 //			Encog.getInstance().shutdown();
-//
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 	}
 
