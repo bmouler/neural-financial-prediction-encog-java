@@ -20,8 +20,7 @@ public class Props {
 	 *   PROPS_FILE
 	 *   PROPS_FILE_PATH: WORKING_DIR + "/" + PROPS_FILE
 	 */
-	public static Properties LoadProps(boolean print, String WORKING_DIR, String PROPS_FILE)
-			throws Exception {
+	public static Properties LoadProps(String WORKING_DIR, String PROPS_FILE) throws Exception {
 		props = new Properties();
 
 		try {
@@ -37,7 +36,8 @@ public class Props {
 			props.put("PROPS_FILE_PATH", PROPS_FILE_PATH);
 
 			// print properties to console
-			if (print) {
+			int DEBUG_LEVEL = GetInt(props, "DEBUG_LEVEL");
+			if (DEBUG_LEVEL >= 1) {
 				System.out.println("======");
 				System.out.println("Properties File found. Configs are:\n");
 				Enumeration<Object> enuKeys = props.keys();
@@ -59,9 +59,8 @@ public class Props {
 
 		return props;
 	}
-	
-	
-	static public String[] GetArrayOfStrings(boolean printAll, Properties props, String label) {
+
+	static public String[] GetArrayOfStrings(int DEBUG_LEVEL, Properties props, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
 		Enumeration<Object> enuKeys = props.keys();
@@ -71,15 +70,15 @@ public class Props {
 				listOfStrings.add(props.getProperty(key));
 			}
 		}
-		
-		if (printAll) {
+
+		if (DEBUG_LEVEL >= 1) {
 			System.out.println("======");
 			System.out.println("List for '" + label + "' is:");
-			
+
 			for (String s : listOfStrings) {
 				System.out.println(s);
 			}
-			
+
 			System.out.println("======");
 
 		}
@@ -87,7 +86,7 @@ public class Props {
 		return listOfStrings.toArray(new String[listOfStrings.size()]);
 	}
 
-	static public List<String> GetListOfStrings(boolean printAll, Properties props, String label) {
+	static public List<String> GetListOfStrings(int DEBUG_LEVEL, Properties props, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
 		Enumeration<Object> enuKeys = props.keys();
@@ -97,51 +96,51 @@ public class Props {
 				listOfStrings.add(props.getProperty(key));
 			}
 		}
-		
-		if (printAll) {
+
+		if (DEBUG_LEVEL >= 1) {
 			System.out.println("======");
 			System.out.println("List for '" + label + "' is:");
-			
+
 			for (String s : listOfStrings) {
 				System.out.println(s);
 			}
-			
+
 			System.out.println("======");
 
 		}
 
 		return listOfStrings;
 	}
-	
+
 	static public String GetString(Properties props, String label) {
 		return props.getProperty(label);
 	}
-	
+
 	static public boolean GetBool(Properties props, String label) {
 		String value = props.getProperty(label);
-		
+
 		if (value.equals("true") || value.equals("TRUE")) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	static public int GetInt(Properties props, String label) {
 		String value = props.getProperty(label);
-		
+
 		return Integer.parseInt(value);
 	}
-	
+
 	static public float GetFloat(Properties props, String label) {
 		String value = props.getProperty(label);
-		
+
 		return Float.parseFloat(value);
 	}
-	
+
 	static public double GetDouble(Properties props, String label) {
 		String value = props.getProperty(label);
-		
+
 		return Double.parseDouble(value);
 	}
 }

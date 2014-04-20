@@ -20,17 +20,16 @@ public class __RUNME {
 	 */
 	final static String WORKING_DIR = "./data/EncogFiles/KevinThreadTest"; // no backslash
 	final static String PROPS_FILE = "config.xml";
-	final static boolean printPropsDebugToConsole = true; // required because props are not loaded
 
 	public static void main(String[] args) throws Exception {
 
 		// load properties file and required values
-		Properties props = Props.LoadProps(printPropsDebugToConsole, WORKING_DIR, PROPS_FILE);
+		Properties props = Props.LoadProps(WORKING_DIR, PROPS_FILE);
 		// debug printing
 		int DEBUG_LEVEL = Props.GetInt(props, "DEBUG_LEVEL");
 		// data files
 		String[] DATA_FILES = Props
-				.GetArrayOfStrings(printPropsDebugToConsole, props, "DATA_FILE_");
+				.GetArrayOfStrings(DEBUG_LEVEL, props, "DATA_FILE_");
 		// temporal settings
 		double NORMALIZED_LOW = Props.GetDouble(props, "NORMALIZED_LOW");
 		double NORMALIZED_HIGH = Props.GetDouble(props, "NORMALIZED_HIGH");
