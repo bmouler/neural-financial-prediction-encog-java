@@ -2,7 +2,11 @@ package KevinThread;
 
 import java.util.Properties;
 
+import org.encog.Encog;
+import org.encog.ml.MLRegression;
 import org.encog.ml.data.temporal.TemporalMLDataSet;
+import org.encog.ml.factory.MLMethodFactory;
+import org.encog.ml.factory.MLTrainFactory;
 
 import DataIngester.DataIngester;
 import PropsXML.Props;
@@ -25,13 +29,14 @@ public class __RUNME {
 		// debug printing
 		int DEBUG_LEVEL = Props.GetInt(props, "DEBUG_LEVEL");
 		// data files
-		String[] DATA_FILES = Props.GetArrayOfStrings(printPropsDebugToConsole, props,
-				"DATA_FILE_");
+		String[] DATA_FILES = Props
+				.GetArrayOfStrings(printPropsDebugToConsole, props, "DATA_FILE_");
 		// temporal settings
 		int INPUT_WINDOW_SIZE = Props.GetInt(props, "INPUT_WINDOW_SIZE");
 		int PREDICT_WINDOW_SIZE = Props.GetInt(props, "PREDICT_WINDOW_SIZE");
 		// training
 		String ACTIVATION_FUNCTION = Props.GetString(props, "ACTIVATION_FUNCTION");
+		double TARGET_ERROR = Props.GetDouble(props, "TARGET_ERROR");
 		// predict
 		int EVALUATE_START = Props.GetInt(props, "EVALUATE_START");
 		int EVALUATE_END = Props.GetInt(props, "EVALUATE_END");
@@ -45,16 +50,18 @@ public class __RUNME {
 			TemporalMLDataSet temporalDataset = dataIngester.makeTemporalDataSet(DEBUG_LEVEL,
 					INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
-//			// Step 2. Create and train the model.
-//			MLRegression model = Train.trainModel(temporalDataset, MLMethodFactory.TYPE_FEEDFORWARD,
-//					ACTIVATION_FUNCTION, MLTrainFactory.TYPE_RPROP, "");
-//
-//			// Step 3. Predict
-//			Predict.predict(model, EVALUATE_START, EVALUATE_END, INPUT_WINDOW_SIZE);
-//			
-//			// shutdown
-//			Encog.getInstance().shutdown();
+			// Step 2. Create and train the model.
+			String trainerArgs = "";
+			MLRegression model = Train.trainModel(temporalDataset,
+					MLMethodFactory.TYPE_FEEDFORWARD, ACTIVATION_FUNCTION,
+					MLTrainFactory.TYPE_RPROP, trainerArgs, TARGET_ERROR, DEBUG_LEVEL);
+
+			// Step 3. Predict
+			// Predict.predict(model, EVALUATE_START, EVALUATE_END, INPUT_WINDOW_SIZE);
 			
+			// shutdown
+			Encog.getInstance().shutdown();
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
