@@ -11,13 +11,13 @@
 	<entry key="DEBUG_LEVEL">1</entry>
 	
 	<!-- List of csv data files for import -->
-	<entry key="DATA_FILE_0">./data/stockPredictorDefaultData/INDEX_GSPC.csv</entry>
-	<entry key="DATA_FILE_1">./data/stockPredictorDefaultData/DGS2.csv</entry>
-	<entry key="DATA_FILE_2">./data/stockPredictorDefaultData/DGS10.csv</entry>
-	<entry key="DATA_FILE_3">./data/stockPredictorDefaultData/EURUSD.csv</entry>
-	<entry key="DATA_FILE_4">./data/stockPredictorDefaultData/FUTURE_CL1.csv</entry>
-	<entry key="DATA_FILE_5">./data/stockPredictorDefaultData/INDEX_RTS_RS.csv</entry>
-	<entry key="DATA_FILE_6">./data/stockPredictorDefaultData/JPYUSD.csv</entry>
+	<entry key="DATA_FILE_0">./data/dataIngesterDefaultData/INDEX_GSPC.csv</entry>
+	<entry key="DATA_FILE_1">./data/dataIngesterDefaultData/DGS2.csv</entry>
+	<entry key="DATA_FILE_2">./data/dataIngesterDefaultData/DGS10.csv</entry>
+	<entry key="DATA_FILE_3">./data/dataIngesterDefaultData/EURUSD.csv</entry>
+	<entry key="DATA_FILE_4">./data/dataIngesterDefaultData/FUTURE_CL1.csv</entry>
+	<entry key="DATA_FILE_5">./data/dataIngesterDefaultData/INDEX_RTS_RS.csv</entry>
+	<entry key="DATA_FILE_6">./data/dataIngesterDefaultData/JPYUSD.csv</entry>
 
 	<!-- Temporal dataset -->
 	<entry key="INPUT_WINDOW_SIZE">12</entry>
