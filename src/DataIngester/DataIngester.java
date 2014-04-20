@@ -242,10 +242,10 @@ public class DataIngester {
 	}
 
 	// Normalize data to be within -1 and +1 in each data set
-	public void normalizeData() {
+	public void normalizeData(double NORMALIZED_LOW, double NORMALIZED_HIGH) {
 		NormalizeArray norm = new NormalizeArray();
-		norm.setNormalizedLow(-1.0);
-		norm.setNormalizedHigh(1.0);
+		norm.setNormalizedLow(NORMALIZED_LOW);
+		norm.setNormalizedHigh(NORMALIZED_HIGH);
 
 		for (int dataSetNum = 0; dataSetNum < m_data.length; ++dataSetNum) {
 			// Find min and max of data set
@@ -266,7 +266,7 @@ public class DataIngester {
 		}
 	}
 
-	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles) {
+	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles, double NORMALIZED_LOW, double NORMALIZED_HIGH) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -274,7 +274,7 @@ public class DataIngester {
 
 		// read in and normalize data
 		readData(DEBUG_LEVEL, listOfDataFiles);
-		normalizeData();
+		normalizeData(NORMALIZED_LOW, NORMALIZED_HIGH);
 
 		// list of data series names printout
 		if (DEBUG_LEVEL >= 1) {
@@ -390,7 +390,7 @@ public class DataIngester {
 		int DEBUG_LEVEL = 2;
 
 		DataIngester dataIngester = new DataIngester();
-		dataIngester.createData(DEBUG_LEVEL, DATA_FILE_NAMES);
+		dataIngester.createData(DEBUG_LEVEL, DATA_FILE_NAMES, -1.0, 1.0);
 
 		TemporalMLDataSet temporal = null;
 		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1);
