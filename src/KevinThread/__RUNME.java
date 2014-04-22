@@ -47,7 +47,6 @@ public class __RUNME {
 			TemporalMLDataSet temporalDataset = dataIngester.makeTemporalDataSet(p.DEBUG_LEVEL,
 					p.INPUT_WINDOW_SIZE, p.PREDICT_WINDOW_SIZE, p.PREDICT_FILE, p.PREDICT_LABEL);
 
-			// TODO ensure training is being done to predict the predictFieldIndex
 			switch (p.PREDICT_MODEL) {
 			case "Regression":
 				// Step 2. Create and train the model
