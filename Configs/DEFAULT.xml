@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- All keys should be ALL_CAPS_WITH_UNDERSCORES for ease of reference. -->
+	<comment>Properties for Analysis App</comment>
+
+<!-- Debug printing controls -->
+	<!-- 0 = print nothing -->
+	<!-- 1 = print some things -->
+	<!-- 2 = print everything -->
+	<entry key="DEBUG_LEVEL">2</entry>
+	
+<!-- List of csv data files for import -->
+	<entry key="DATA_NEEDS_CLEANING">false</entry>
+	<entry key="DATA_NEEDS_NORMALIZATION">false</entry>
+	<entry key="DATA_FILE_0">./data/BertClean.20140421.001/dat1.csv</entry>
+
+<!-- Temporal dataset -->
+	<entry key="NORMALIZED_LOW">0</entry>
+	<entry key="NORMALIZED_HIGH">1.0</entry>
+	<entry key="INPUT_WINDOW_SIZE">12</entry>
+	<entry key="PREDICT_WINDOW_SIZE">1</entry>
+
+<!-- Training -->
+	<!-- Model Options -->
+		<!-- Regression -->
+		<!-- Classification -->
+		<entry key="PREDICT_MODEL">Classification</entry>
+	<entry key="ACTIVATION_FUNCTION">?:B->SIGMOID->25:B->SIGMOID->?</entry>
+	<entry key="TARGET_ERROR">0.35</entry>
+		
+<!-- Predict -->
+	<entry key="PREDICT_FILE">dat1</entry>
+	<entry key="PREDICT_LABEL">target</entry>
+
+<!-- Output -->
+	<entry key="PRINT_DENORMALIZED">true</entry>	
+
+</properties>

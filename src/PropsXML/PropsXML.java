@@ -27,59 +27,59 @@ public class PropsXML {
 
 	// debug printing
 	public int DEBUG_LEVEL;
-	
+
 	// data files
 	public String PREDICT_MODEL;
 	public String[] DATA_FILES;
 	public boolean DATA_NEEDS_CLEANING;
 	public boolean DATA_NEEDS_NORMALIZATION;
-	
+
 	// temporal settings
 	public double NORMALIZED_LOW;
 	public double NORMALIZED_HIGH;
 	public int INPUT_WINDOW_SIZE;
 	public int PREDICT_WINDOW_SIZE;
-	
+
 	// training
 	public String ACTIVATION_FUNCTION;
 	public double TARGET_ERROR;
-	
+
 	// predict
 	public String PREDICT_FILE;
 	public String PREDICT_LABEL;
-	
+
 	// output
 	public boolean PRINT_DENORMALIZED;
 
 	public void InitializeValues() {
 		// debug printing
 		DEBUG_LEVEL = GetInt("DEBUG_LEVEL");
-		
+
 		// data files
-		PREDICT_MODEL = GetString("PREDICT_MODEL"); //TODO not used yet
+		PREDICT_MODEL = GetString("PREDICT_MODEL"); // TODO not used yet
 		DATA_FILES = GetArrayOfStrings(DEBUG_LEVEL, "DATA_FILE_");
 		DATA_NEEDS_CLEANING = GetBool("DATA_NEEDS_CLEANING");
 		DATA_NEEDS_NORMALIZATION = GetBool("DATA_NEEDS_NORMALIZATION");
-		
+
 		// temporal settings
 		NORMALIZED_LOW = GetDouble("NORMALIZED_LOW");
 		NORMALIZED_HIGH = GetDouble("NORMALIZED_HIGH");
 		INPUT_WINDOW_SIZE = GetInt("INPUT_WINDOW_SIZE");
 		PREDICT_WINDOW_SIZE = GetInt("PREDICT_WINDOW_SIZE");
-		
+
 		// training
 		ACTIVATION_FUNCTION = GetString("ACTIVATION_FUNCTION");
 		TARGET_ERROR = GetDouble("TARGET_ERROR");
-		
+
 		// predict
 		PREDICT_FILE = GetString("PREDICT_FILE");
 		PREDICT_LABEL = GetString("PREDICT_LABEL");
-		
+
 		// output
 		PRINT_DENORMALIZED = GetBool("PRINT_DENORMALIZED");
 	}
 
-	//constructor
+	// constructor
 	public PropsXML(String WORKING_DIR, String PROPS_FILE) throws Exception {
 		props = new Properties();
 
@@ -116,11 +116,11 @@ public class PropsXML {
 			e.printStackTrace();
 			throw new Exception("Error while attempting to read config.xml: io exception.");
 		}
-		
-		//populate the values declared in..
+
+		// populate the values declared in..
 		InitializeValues();
-		
-		//all values are now accessible by referring to this object.VALUE
+
+		// all values are now accessible by referring to this object.VALUE
 	}
 
 	public String[] GetArrayOfStrings(int DEBUG_LEVEL, String label) {
@@ -152,58 +152,114 @@ public class PropsXML {
 	public List<String> GetListOfStrings(int DEBUG_LEVEL, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
-		Enumeration<Object> enuKeys = props.keys();
-		while (enuKeys.hasMoreElements()) {
-			String key = (String) enuKeys.nextElement();
-			if (key.startsWith(label)) {
-				listOfStrings.add(props.getProperty(key));
-			}
-		}
-
-		if (DEBUG_LEVEL >= 1) {
-			System.out.println("======");
-			System.out.println("List for '" + label + "' is:");
-
-			for (String s : listOfStrings) {
-				System.out.println(s);
+		try {
+			Enumeration<Object> enuKeys = props.keys();
+			while (enuKeys.hasMoreElements()) {
+				String key = (String) enuKeys.nextElement();
+				if (key.startsWith(label)) {
+					listOfStrings.add(props.getProperty(key));
+				}
 			}
 
-			System.out.println("======");
+			if (DEBUG_LEVEL >= 1) {
+				System.out.println("======");
+				System.out.println("List for '" + label + "' is:");
 
+				for (String s : listOfStrings) {
+					System.out.println(s);
+				}
+
+				System.out.println("======");
+
+			}
+
+			// force error
+			// check for element one fails
+			listOfStrings.get(0);
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (list of Strings): '" + label
+					+ "...'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
 		}
 
 		return listOfStrings;
 	}
 
 	public String GetString(String label) {
-		return props.getProperty(label);
+		String result = null;
+
+		try {
+			result = props.getProperty(label);
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (String): '" + label + "'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
+		}
+		return result;
 	}
 
 	public boolean GetBool(String label) {
-		String value = props.getProperty(label);
+		try {
+			String value = props.getProperty(label);
 
-		if (value.equals("true") || value.equals("TRUE")) {
-			return true;
+			if (value.equals("true") || value.equals("TRUE")) {
+				return true;
+			}
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (boolean): '" + label + "'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
 		}
 
 		return false;
 	}
 
 	public int GetInt(String label) {
-		String value = props.getProperty(label);
+		int result = -1;
 
-		return Integer.parseInt(value);
+		try {
+			String value = props.getProperty(label);
+
+			result = Integer.parseInt(value);
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (int): '" + label + "'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public float GetFloat(String label) {
-		String value = props.getProperty(label);
+		float result = -1f;
 
-		return Float.parseFloat(value);
+		try {
+			String value = props.getProperty(label);
+
+			result = Float.parseFloat(value);
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (float): '" + label + "'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public double GetDouble(String label) {
-		String value = props.getProperty(label);
+		double result = -1;
 
-		return Double.parseDouble(value);
+		try {
+			String value = props.getProperty(label);
+
+			result = Double.parseDouble(value);
+		} catch (Exception ex) {
+			System.out.println("!! Missing mandatory config field (double): '" + label + "'");
+			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+			ex.printStackTrace();
+		}
+
+		return result;
 	}
 }
