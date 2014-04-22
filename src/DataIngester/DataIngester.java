@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.encog.engine.network.activation.ActivationBiPolar;
 import org.encog.engine.network.activation.ActivationSigmoid;
@@ -18,18 +17,6 @@ import org.encog.ml.train.MLTrain;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
-//import java.text.NumberFormat;
-//
-//import org.encog.ml.data.MLData;
-//import org.encog.ml.data.MLDataSet;
-//import org.encog.ml.data.basic.BasicMLData;
-//import org.encog.ml.data.temporal.TemporalDataDescription;
-//import org.encog.ml.data.temporal.TemporalMLDataSet;
-//import org.encog.ml.data.temporal.TemporalPoint;
-//import org.encog.neural.networks.BasicNetwork;
-//import org.encog.neural.networks.layers.BasicLayer;
-//import org.encog.neural.networks.training.Train;
-//import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.util.arrayutil.NormalizeArray;
 
 public class DataIngester {
@@ -38,6 +25,7 @@ public class DataIngester {
 
 	// Names of data series
 	private String[] m_dataNames;
+
 	public int getPredictFieldIndex(String PREDICT_FILE, String PREDICT_LABEL) {
 		int predictedField = -1;
 		for (int i = 0; i < m_dataNames.length; i++) {
@@ -55,6 +43,7 @@ public class DataIngester {
 	// Data for all data series; leftmost index corresponds to data series
 	// number
 	private double[][] m_data;
+
 	public int getNumberOfDataSeries() {
 		return m_data.length;
 	}
@@ -134,12 +123,25 @@ public class DataIngester {
 						// Prepend either a "19" or "20" onto dates in order to
 						// make them 4 digits long
 						String[] datePieces = linePieces[0].split("/");
-						if (Integer.parseInt(datePieces[2]) <= 15) {
-							datePieces[2] = "20" + datePieces[2];
-						} else {
-							datePieces[2] = "19" + datePieces[2];
+						int year = Integer.parseInt(datePieces[2]);
+						if (year < 100) { //not a four digit year
+							if (year <= 15) {
+								datePieces[2] = "20" + datePieces[2];
+							} else {
+								datePieces[2] = "19" + datePieces[2];
+							}
 						}
-
+						
+						// prepend zeros to months and days for consistency
+						String month = datePieces[0];
+						if (month.length() < 2) {
+							datePieces[0] = "0" + datePieces[0];
+						}
+						String day = datePieces[1];
+						if (day.length() < 2) {
+							datePieces[1] = "0" + datePieces[1];
+						}
+						
 						// Invert date into a sortable format
 						String date = datePieces[2] + "-" + datePieces[0] + "-" + datePieces[1];
 
@@ -435,13 +437,14 @@ public class DataIngester {
 	}
 
 	public static void main(String args[]) {
-		String[] DATA_FILE_NAMES = { "./data/dataIngesterDefaultData/INDEX_GSPC.csv",
-				"./data/dataIngesterDefaultData/DGS2.csv",
-				"./data/dataIngesterDefaultData/DGS10.csv",
-				"./data/dataIngesterDefaultData/EURUSD.csv",
-				"./data/dataIngesterDefaultData/FUTURE_CL1.csv",
-				"./data/dataIngesterDefaultData/INDEX_RTS_RS.csv",
-				"./data/dataIngesterDefaultData/JPYUSD.csv" };
+//		String[] DATA_FILE_NAMES = { "./data/dataIngesterDefaultData/INDEX_GSPC.csv",
+//				"./data/dataIngesterDefaultData/DGS2.csv",
+//				"./data/dataIngesterDefaultData/DGS10.csv",
+//				"./data/dataIngesterDefaultData/EURUSD.csv",
+//				"./data/dataIngesterDefaultData/FUTURE_CL1.csv",
+//				"./data/dataIngesterDefaultData/INDEX_RTS_RS.csv",
+//				"./data/dataIngesterDefaultData/JPYUSD.csv" };
+		String[] DATA_FILE_NAMES = { "./data/BertClean.20140421.001/dat1.csv"};
 
 		// 2 means print everything
 		int DEBUG_LEVEL = 2;

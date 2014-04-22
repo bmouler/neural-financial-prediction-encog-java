@@ -55,6 +55,7 @@ public class Predict {
 				double predicted = modelOutput.getData(predictFieldIndex);
 				double actual = temporalDataset.getPoints().get(i).getData(predictFieldIndex);
 
+				// TODO how should the data be normailzed for processing?
 				// TODO need to figure out what the output actual means to go any further
 				if (DEBUG_LEVEL >= 1) {
 					System.out.printf(" %5d : %5.8f : %5.8f : %6.2f \n", point.getSequence(),
