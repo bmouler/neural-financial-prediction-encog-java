@@ -62,6 +62,7 @@ public class __RUNME {
 					INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
 			// Step 2. Create and train the model.
+			//TODO ensure training is being done to predict the predictFieldIndex
 			String trainerArgs = "";
 			MLRegression model = Train.trainModel(temporalDataset,
 					MLMethodFactory.TYPE_FEEDFORWARD, ACTIVATION_FUNCTION,
