@@ -17,8 +17,8 @@ public class __RUNME {
 	 * as described in PROPS_FILE.
 	 */
 	// final static String WORKING_DIR = "./Configs/KevinThreadTest"; // no backslash
-	// final static String WORKING_DIR = "./Configs/BertCleanTestClassification"; // no backslash
-	 final static String WORKING_DIR = "./Configs/BertCleanTestRegression"; // no backslash
+	 final static String WORKING_DIR = "./Configs/BertCleanTestClassification"; // no backslash
+	// final static String WORKING_DIR = "./Configs/BertCleanTestRegression"; // no backslash
 	 final static String PROPS_FILE = "config.xml";
 
 	public static void main(String[] args) throws Exception {
@@ -62,7 +62,7 @@ public class __RUNME {
 						predictFieldIndex, p.PRINT_DENORMALIZED);
 				break;
 			case "Classification":
-				Classification_Train.trainModel(p.DEBUG_LEVEL, temporalDataset);
+				Classification_Train.trainModel(p.DEBUG_LEVEL, temporalDataset, p.TARGET_ERROR);
 				break;
 			default:
 				throw new Exception("No model specified.");
