@@ -36,7 +36,7 @@ public class Classification_Train {
 	 *            Training arguments.
 	 * @return The trained model.
 	 */
-	public static void trainModel(int DEBUG_LEVEL, TemporalMLDataSet temporal) {
+	public static void trainModel(int DEBUG_LEVEL, TemporalMLDataSet temporal, double TARGET_ERROR) {
 		
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -64,7 +64,7 @@ public class Classification_Train {
 			train.iteration();
 			System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 			epoch++;
-		} while(train.getError() > 0.01);
+		} while(train.getError() > TARGET_ERROR);
 		train.finishTraining();
 		
 		// complete message
