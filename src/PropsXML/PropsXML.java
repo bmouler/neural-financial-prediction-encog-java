@@ -124,32 +124,15 @@ public class PropsXML {
 	}
 
 	public String[] GetArrayOfStrings(int DEBUG_LEVEL, String label) {
-		List<String> listOfStrings = new ArrayList<String>();
-
-		Enumeration<Object> enuKeys = props.keys();
-		while (enuKeys.hasMoreElements()) {
-			String key = (String) enuKeys.nextElement();
-			if (key.startsWith(label)) {
-				listOfStrings.add(props.getProperty(key));
-			}
-		}
-
-		if (DEBUG_LEVEL >= 1) {
-			System.out.println("======");
-			System.out.println("List for '" + label + "' is:");
-
-			for (String s : listOfStrings) {
-				System.out.println(s);
-			}
-
-			System.out.println("======");
-
-		}
-
+		List<String> listOfStrings = ListOfStringsWork(DEBUG_LEVEL, label);
 		return listOfStrings.toArray(new String[listOfStrings.size()]);
 	}
 
 	public List<String> GetListOfStrings(int DEBUG_LEVEL, String label) {
+		return ListOfStringsWork(DEBUG_LEVEL, label);
+	}
+
+	private List<String> ListOfStringsWork(int DEBUG_LEVEL, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
 		try {
@@ -173,14 +156,8 @@ public class PropsXML {
 
 			}
 
-			// force error
-			// check for element one fails
-			listOfStrings.get(0);
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (list of Strings): '" + label
-					+ "...'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("list of Strings", label + "#", ex);
 		}
 
 		return listOfStrings;
@@ -192,9 +169,7 @@ public class PropsXML {
 		try {
 			result = props.getProperty(label);
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (String): '" + label + "'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("String", label, ex);
 		}
 		return result;
 	}
@@ -205,11 +180,13 @@ public class PropsXML {
 
 			if (value.equals("true") || value.equals("TRUE")) {
 				return true;
+			} else if (value.equals("false") || value.equals("FALSE")) {
+				//nothing, proceed to end
+			} else {
+				configParseError("boolean", label, new Exception() );
 			}
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (boolean): '" + label + "'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("boolean", label, ex);
 		}
 
 		return false;
@@ -221,11 +198,13 @@ public class PropsXML {
 		try {
 			String value = props.getProperty(label);
 
+			try {
 			result = Integer.parseInt(value);
+			} catch (Exception ex) {
+				configParseError("int", label, ex);
+			}
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (int): '" + label + "'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("int", label, ex);
 		}
 
 		return result;
@@ -237,11 +216,13 @@ public class PropsXML {
 		try {
 			String value = props.getProperty(label);
 
-			result = Float.parseFloat(value);
+			try {
+				result = Float.parseFloat(value);
+			} catch (Exception ex) {
+				configParseError("float", label, ex);
+			}
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (float): '" + label + "'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("float", label, ex);
 		}
 
 		return result;
@@ -253,13 +234,36 @@ public class PropsXML {
 		try {
 			String value = props.getProperty(label);
 
-			result = Double.parseDouble(value);
+			try {
+				result = Double.parseDouble(value);
+			} catch (Exception ex) {
+				configParseError("double", label, ex);
+			}
 		} catch (Exception ex) {
-			System.out.println("!! Missing mandatory config field (double): '" + label + "'");
-			System.out.println("!! See default config at ./Configs/DEFAULT.xml");
-			ex.printStackTrace();
+			configReadError("double", label, ex);
 		}
 
 		return result;
+	}
+
+	private void configReadError(String type, String label, Exception ex) {
+		System.out.println("\n\nPropsXML Error:");
+		System.out.println("!! Missing mandatory config field (" + type + "): '" + label + "'");
+		System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+		System.out.println("\n\n");
+		ex.printStackTrace();
+		System.exit(-1);
+	}
+
+	private void configParseError(String type, String label, Exception ex) {
+		System.out.println("\n\nPropsXML Error:");
+		System.out.println("!! Failed to parse (" + type + ") from field: '" + label + "'");
+		if (type.equals("boolean")) {
+			System.out.println("!! Accepted values are: true, TRUE, false, FALSE");
+		}
+		System.out.println("!! See default config at ./Configs/DEFAULT.xml");
+		System.out.println("\n\n");
+		ex.printStackTrace();
+		System.exit(-1);
 	}
 }
