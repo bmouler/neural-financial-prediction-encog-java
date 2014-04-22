@@ -441,7 +441,7 @@ public class DataIngester {
 		result.generate();
 
 		// summary and header for temporal data printout
-		if (DEBUG_LEVEL >= 2) {
+		if (DEBUG_LEVEL >= 1) {
 			System.out.println("Printing temporal data");
 			System.out.println("Summary:");
 			System.out.println("  Record count: " + result.getRecordCount());
