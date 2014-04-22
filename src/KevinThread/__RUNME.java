@@ -16,9 +16,9 @@ public class __RUNME {
 	 * file in this directory. The file must be in the root of the workingDir and be named
 	 * as described in PROPS_FILE.
 	 */
-	// final static String WORKING_DIR = "./Configs/KevinThreadTest"; // no backslash
+	 final static String WORKING_DIR = "./Configs/KevinThreadTest"; // no backslash
 	// final static String WORKING_DIR = "./Configs/BertCleanTestClassification"; // no backslash
-	final static String WORKING_DIR = "./Configs/BertCleanTestRegression"; // no backslash
+	// final static String WORKING_DIR = "./Configs/BertCleanTestRegression"; // no backslash
 	final static String PROPS_FILE = "config.xml";
 
 	public static void main(String[] args) throws Exception {

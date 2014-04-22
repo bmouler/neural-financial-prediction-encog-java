@@ -49,24 +49,23 @@ public class Regression_Predict {
 				// of the time slice its encoding. So for RAW data we are really encoding 0.
 				MLData modelInput = testSet.generateInputNeuralData(1);
 				MLData modelOutput = model.compute(modelInput);
-
-				// double predicted = normPrice.deNormalize(modelOutput.getData(predictFieldIndex));
+				
+				//get the results for this iteration
 				double predicted = modelOutput.getData(predictFieldIndex);
 				double actual = temporalDataset.getPoints().get(i).getData(predictFieldIndex);
 				double error = actual - predicted;
 				double errorPercent = ((actual - predicted) / actual) * 100;
-
+				
+				// denormalize if specified in config.xml
 				if (PRINT_DENORMALIZED) {
 					predicted = normPrice.deNormalize(predicted);
 					actual = normPrice.deNormalize(actual);
 
-					// TODO shouldn't this be the same?
 					error = actual - predicted;
 					errorPercent = ((actual - predicted) / actual) * 100;
 				}
-
-				// TODO how should the data be normalized for processing?
-				// TODO need to figure out what the output actual means to go any further
+				
+				// print results from this iteration
 				if (DEBUG_LEVEL >= 1) {
 					System.out.printf(" %5d : %10.2f : %10.2f : %10.2f : %10.2f%% \n",
 							point.getSequence(), predicted, actual, error, errorPercent);
