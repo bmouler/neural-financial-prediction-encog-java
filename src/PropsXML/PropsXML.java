@@ -9,9 +9,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-public class Props {
-
-	static Properties props = null;
+public class PropsXML {
 
 	/*
 	 * Reads properties from an xml file.
@@ -20,7 +18,69 @@ public class Props {
 	 *   PROPS_FILE
 	 *   PROPS_FILE_PATH: WORKING_DIR + "/" + PROPS_FILE
 	 */
-	public static Properties LoadProps(String WORKING_DIR, String PROPS_FILE) throws Exception {
+
+	Properties props = null;
+
+	/*
+	 * !! ADD NEW PROPERTIES HERE and load them in InitializeValues()
+	 */
+
+	// debug printing
+	public int DEBUG_LEVEL;
+	
+	// data files
+	public String PREDICT_MODEL;
+	public String[] DATA_FILES;
+	public boolean DATA_NEEDS_CLEANING;
+	public boolean DATA_NEEDS_NORMALIZATION;
+	
+	// temporal settings
+	public double NORMALIZED_LOW;
+	public double NORMALIZED_HIGH;
+	public int INPUT_WINDOW_SIZE;
+	public int PREDICT_WINDOW_SIZE;
+	
+	// training
+	public String ACTIVATION_FUNCTION;
+	public double TARGET_ERROR;
+	
+	// predict
+	public String PREDICT_FILE;
+	public String PREDICT_LABEL;
+	
+	// output
+	public boolean PRINT_DENORMALIZED;
+
+	public void InitializeValues() {
+		// debug printing
+		DEBUG_LEVEL = GetInt("DEBUG_LEVEL");
+		
+		// data files
+		PREDICT_MODEL = GetString("PREDICT_MODEL"); //TODO not used yet
+		DATA_FILES = GetArrayOfStrings(DEBUG_LEVEL, "DATA_FILE_");
+		DATA_NEEDS_CLEANING = GetBool("DATA_NEEDS_CLEANING");
+		DATA_NEEDS_NORMALIZATION = GetBool("DATA_NEEDS_NORMALIZATION");
+		
+		// temporal settings
+		NORMALIZED_LOW = GetDouble("NORMALIZED_LOW");
+		NORMALIZED_HIGH = GetDouble("NORMALIZED_HIGH");
+		INPUT_WINDOW_SIZE = GetInt("INPUT_WINDOW_SIZE");
+		PREDICT_WINDOW_SIZE = GetInt("PREDICT_WINDOW_SIZE");
+		
+		// training
+		ACTIVATION_FUNCTION = GetString("ACTIVATION_FUNCTION");
+		TARGET_ERROR = GetDouble("TARGET_ERROR");
+		
+		// predict
+		PREDICT_FILE = GetString("PREDICT_FILE");
+		PREDICT_LABEL = GetString("PREDICT_LABEL");
+		
+		// output
+		PRINT_DENORMALIZED = GetBool("PRINT_DENORMALIZED");
+	}
+
+	//constructor
+	public PropsXML(String WORKING_DIR, String PROPS_FILE) throws Exception {
 		props = new Properties();
 
 		try {
@@ -36,7 +96,7 @@ public class Props {
 			props.put("PROPS_FILE_PATH", PROPS_FILE_PATH);
 
 			// print properties to console
-			int DEBUG_LEVEL = GetInt(props, "DEBUG_LEVEL");
+			int DEBUG_LEVEL = GetInt("DEBUG_LEVEL");
 			if (DEBUG_LEVEL >= 1) {
 				System.out.println("======");
 				System.out.println("Properties File found. Configs are:\n");
@@ -56,11 +116,14 @@ public class Props {
 			e.printStackTrace();
 			throw new Exception("Error while attempting to read config.xml: io exception.");
 		}
-
-		return props;
+		
+		//populate the values declared in..
+		InitializeValues();
+		
+		//all values are now accessible by referring to this object.VALUE
 	}
 
-	static public String[] GetArrayOfStrings(int DEBUG_LEVEL, Properties props, String label) {
+	public String[] GetArrayOfStrings(int DEBUG_LEVEL, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
 		Enumeration<Object> enuKeys = props.keys();
@@ -86,7 +149,7 @@ public class Props {
 		return listOfStrings.toArray(new String[listOfStrings.size()]);
 	}
 
-	static public List<String> GetListOfStrings(int DEBUG_LEVEL, Properties props, String label) {
+	public List<String> GetListOfStrings(int DEBUG_LEVEL, String label) {
 		List<String> listOfStrings = new ArrayList<String>();
 
 		Enumeration<Object> enuKeys = props.keys();
@@ -112,11 +175,11 @@ public class Props {
 		return listOfStrings;
 	}
 
-	static public String GetString(Properties props, String label) {
+	public String GetString(String label) {
 		return props.getProperty(label);
 	}
 
-	static public boolean GetBool(Properties props, String label) {
+	public boolean GetBool(String label) {
 		String value = props.getProperty(label);
 
 		if (value.equals("true") || value.equals("TRUE")) {
@@ -126,19 +189,19 @@ public class Props {
 		return false;
 	}
 
-	static public int GetInt(Properties props, String label) {
+	public int GetInt(String label) {
 		String value = props.getProperty(label);
 
 		return Integer.parseInt(value);
 	}
 
-	static public float GetFloat(Properties props, String label) {
+	public float GetFloat(String label) {
 		String value = props.getProperty(label);
 
 		return Float.parseFloat(value);
 	}
 
-	static public double GetDouble(Properties props, String label) {
+	public double GetDouble(String label) {
 		String value = props.getProperty(label);
 
 		return Double.parseDouble(value);

@@ -11,7 +11,7 @@ import org.encog.ml.train.strategy.RequiredImprovementStrategy;
 import org.encog.neural.networks.training.propagation.manhattan.ManhattanPropagation;
 import org.encog.util.simple.EncogUtility;
 
-public class Train {
+public class Regression_Train {
 	/**
 	 * Create and train a model. Use Encog factory codes to specify the model type that you want.
 	 * 
@@ -27,7 +27,7 @@ public class Train {
 	 *            Training arguments.
 	 * @return The trained model.
 	 */
-	public static MLRegression trainModel(MLDataSet trainingData, String methodName,
+	public static MLRegression trainModelRegression(MLDataSet trainingData, String methodName,
 			String methodArchitecture, String trainerName, String trainerArgs, double TARGET_ERROR,
 			int DEBUG_LEVEL) {
 

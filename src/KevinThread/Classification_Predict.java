@@ -7,7 +7,7 @@ import org.encog.ml.data.temporal.TemporalPoint;
 
 import DataIngester.DataIngester;
 
-public class Predict {
+public class Classification_Predict {
 
 	public static void predict(TemporalMLDataSet temporalDataset, MLRegression model,
 			int DEBUG_LEVEL, int INPUT_WINDOW_SIZE, int PREDICT_WINDOW_SIZE, double NORMALIZED_LOW,
@@ -27,7 +27,7 @@ public class Predict {
 		// initialize a new TemporalMLDataSet with the same settings
 		DataIngester dataIngester = new DataIngester();
 		TemporalMLDataSet testSet = dataIngester.initTemporalDataSet(DEBUG_LEVEL,
-				INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE, numberOfDataSeries);
+				INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE, numberOfDataSeries, predictFieldIndex);
 
 		// header for printout
 		if (DEBUG_LEVEL >= 1)
@@ -55,12 +55,11 @@ public class Predict {
 				double predicted = modelOutput.getData(predictFieldIndex);
 				double actual = temporalDataset.getPoints().get(i).getData(predictFieldIndex);
 
-				// TODO how should the data be normailzed for processing?
+				// TODO how should the data be normalized for processing?
 				// TODO need to figure out what the output actual means to go any further
 				if (DEBUG_LEVEL >= 1) {
 					System.out.printf(" %5d : %5.8f : %5.8f : %6.2f \n", point.getSequence(),
-							predicted, actual, 0f, 0f);
-					// + " : Actual = " + actual);
+							predicted, actual, 0f);
 				}
 
 				// Remove the earliest training element. Unlike when we produced training data,

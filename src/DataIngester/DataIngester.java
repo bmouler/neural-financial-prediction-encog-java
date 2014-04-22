@@ -50,7 +50,7 @@ public class DataIngester {
 
 	// Read in, temporally sort in chronologically-increasing order, and remove
 	// any data points taken at dates not common to all data series
-	public void readData(int DEBUG_LEVEL, String[] dataFiles) {
+	public void readData(int DEBUG_LEVEL, String[] dataFiles, boolean DATA_NEEDS_CLEANING) {
 		BufferedReader reader = null;
 
 		try {
@@ -124,14 +124,14 @@ public class DataIngester {
 						// make them 4 digits long
 						String[] datePieces = linePieces[0].split("/");
 						int year = Integer.parseInt(datePieces[2]);
-						if (year < 100) { //not a four digit year
+						if (year < 100) { // not a four digit year
 							if (year <= 15) {
 								datePieces[2] = "20" + datePieces[2];
 							} else {
 								datePieces[2] = "19" + datePieces[2];
 							}
 						}
-						
+
 						// prepend zeros to months and days for consistency
 						String month = datePieces[0];
 						if (month.length() < 2) {
@@ -141,7 +141,7 @@ public class DataIngester {
 						if (day.length() < 2) {
 							datePieces[1] = "0" + datePieces[1];
 						}
-						
+
 						// Invert date into a sortable format
 						String date = datePieces[2] + "-" + datePieces[0] + "-" + datePieces[1];
 
@@ -194,34 +194,36 @@ public class DataIngester {
 			}
 
 			// Remove any data for date entries not common to all data sets
-			for (int dataSeriesNum = 0; dataSeriesNum < m_numDataSeries; ++dataSeriesNum) {
-				if (DEBUG_LEVEL >= 1)
-					System.out.printf("  %2d out of %d\n", dataSeriesNum + 1, m_numDataSeries);
+			if (DATA_NEEDS_CLEANING) {
+				for (int dataSeriesNum = 0; dataSeriesNum < m_numDataSeries; ++dataSeriesNum) {
+					if (DEBUG_LEVEL >= 1)
+						System.out.printf("  %2d out of %d\n", dataSeriesNum + 1, m_numDataSeries);
 
-				// Loop through each date element in each series
-				int dateNum = 0;
-				while (dateNum < dateLists.get(dataSeriesNum).size()) {
-					// For convenience, grab current looked-for date
-					String date = dateLists.get(dataSeriesNum).get(dateNum);
+					// Loop through each date element in each series
+					int dateNum = 0;
+					while (dateNum < dateLists.get(dataSeriesNum).size()) {
+						// For convenience, grab current looked-for date
+						String date = dateLists.get(dataSeriesNum).get(dateNum);
 
-					// Check if date appears in all other data series or not
-					boolean dateIsInAllOtherDataSeries = true;
-					for (int otherDataSeriesNum = 0; otherDataSeriesNum < m_numDataSeries; ++otherDataSeriesNum) {
-						if (dataSeriesNum == otherDataSeriesNum) {
-							continue;
+						// Check if date appears in all other data series or not
+						boolean dateIsInAllOtherDataSeries = true;
+						for (int otherDataSeriesNum = 0; otherDataSeriesNum < m_numDataSeries; ++otherDataSeriesNum) {
+							if (dataSeriesNum == otherDataSeriesNum) {
+								continue;
+							}
+
+							if (!dateLists.get(otherDataSeriesNum).contains(date)) {
+								dateIsInAllOtherDataSeries = false;
+								break;
+							}
 						}
 
-						if (!dateLists.get(otherDataSeriesNum).contains(date)) {
-							dateIsInAllOtherDataSeries = false;
-							break;
+						if (dateIsInAllOtherDataSeries == false) {
+							dateLists.get(dataSeriesNum).remove((int) dateNum);
+							dataLists.get(dataSeriesNum).remove((int) dateNum);
+						} else {
+							++dateNum;
 						}
-					}
-
-					if (dateIsInAllOtherDataSeries == false) {
-						dateLists.get(dataSeriesNum).remove((int) dateNum);
-						dataLists.get(dataSeriesNum).remove((int) dateNum);
-					} else {
-						++dateNum;
 					}
 				}
 			}
@@ -319,15 +321,18 @@ public class DataIngester {
 	}
 
 	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles, double NORMALIZED_LOW,
-			double NORMALIZED_HIGH) {
+			double NORMALIZED_HIGH, boolean DATA_NEEDS_CLEANING, boolean DATA_NEEDS_NORMALIZATION,
+			String PREDICT_FILE, String PREDICT_LABEL) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
 			System.out.println("Starting data import");
 
 		// read in and normalize data
-		readData(DEBUG_LEVEL, listOfDataFiles);
-		normalizeData(DEBUG_LEVEL, NORMALIZED_LOW, NORMALIZED_HIGH);
+		readData(DEBUG_LEVEL, listOfDataFiles, DATA_NEEDS_CLEANING);
+		if (DATA_NEEDS_NORMALIZATION) {
+			normalizeData(DEBUG_LEVEL, NORMALIZED_LOW, NORMALIZED_HIGH);
+		}
 
 		// list of data series names printout
 		if (DEBUG_LEVEL >= 1) {
@@ -362,8 +367,28 @@ public class DataIngester {
 			System.out.println("\n\nCompleted data import");
 	}
 
+	// if you do not know the predictedFieldIndex, this will find it and pass to
+	// initTemporalDataSetWork
 	public TemporalMLDataSet initTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
-			int PREDICT_WINDOW_SIZE, int numberOfDataSeries) {
+			int PREDICT_WINDOW_SIZE, int numberOfDataSeries, String PREDICT_FILE,
+			String PREDICT_LABEL) {
+
+		// get target field
+		int predictedFieldIndex = getPredictFieldIndex(PREDICT_FILE, PREDICT_LABEL);
+
+		return initTemporalDataSetWork(DEBUG_LEVEL, INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE,
+				numberOfDataSeries, predictedFieldIndex);
+	}
+
+	// if you do know the predictedFieldIndex, this will pass the work on to initTemporalDataSetWork
+	public TemporalMLDataSet initTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
+			int PREDICT_WINDOW_SIZE, int numberOfDataSeries, int predictedFieldIndex) {
+		return initTemporalDataSetWork(DEBUG_LEVEL, INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE,
+				numberOfDataSeries, predictedFieldIndex);
+	}
+
+	private TemporalMLDataSet initTemporalDataSetWork(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
+			int PREDICT_WINDOW_SIZE, int numberOfDataSeries, int predictedFieldIndex) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
@@ -374,8 +399,14 @@ public class DataIngester {
 
 		// create description of the TemporalMLDataSet
 		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
-			TemporalDataDescription desc = new TemporalDataDescription(
-					TemporalDataDescription.Type.RAW, true, true);
+			TemporalDataDescription desc = null;
+			if (dataSeriesNum != predictedFieldIndex) {
+				// not a predicted field
+				desc = new TemporalDataDescription(TemporalDataDescription.Type.RAW, true, false);
+			} else {
+				// is a predicted field and not used as input
+				desc = new TemporalDataDescription(TemporalDataDescription.Type.RAW, false, true);
+			}
 			result.addDescription(desc);
 		}
 
@@ -387,14 +418,14 @@ public class DataIngester {
 	}
 
 	public TemporalMLDataSet makeTemporalDataSet(int DEBUG_LEVEL, int INPUT_WINDOW_SIZE,
-			int PREDICT_WINDOW_SIZE) {
+			int PREDICT_WINDOW_SIZE, String PREDICT_FILE, String PREDICT_LABEL) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
 			System.out.println("\n\nStarting transform to temporal dataset");
 
 		TemporalMLDataSet result = initTemporalDataSet(DEBUG_LEVEL, INPUT_WINDOW_SIZE,
-				PREDICT_WINDOW_SIZE, m_data.length);
+				PREDICT_WINDOW_SIZE, m_data.length, PREDICT_FILE, PREDICT_LABEL);
 
 		// transform to TemporalPoint and insert into TemporalMLDataSet
 		for (int dataNum = 0; dataNum < m_dates.length; dataNum++) {
@@ -437,23 +468,32 @@ public class DataIngester {
 	}
 
 	public static void main(String args[]) {
-//		String[] DATA_FILE_NAMES = { "./data/dataIngesterDefaultData/INDEX_GSPC.csv",
-//				"./data/dataIngesterDefaultData/DGS2.csv",
-//				"./data/dataIngesterDefaultData/DGS10.csv",
-//				"./data/dataIngesterDefaultData/EURUSD.csv",
-//				"./data/dataIngesterDefaultData/FUTURE_CL1.csv",
-//				"./data/dataIngesterDefaultData/INDEX_RTS_RS.csv",
-//				"./data/dataIngesterDefaultData/JPYUSD.csv" };
-		String[] DATA_FILE_NAMES = { "./data/BertClean.20140421.001/dat1.csv"};
+		// String[] DATA_FILE_NAMES = { "./data/dataIngesterDefaultData/INDEX_GSPC.csv",
+		// "./data/dataIngesterDefaultData/DGS2.csv",
+		// "./data/dataIngesterDefaultData/DGS10.csv",
+		// "./data/dataIngesterDefaultData/EURUSD.csv",
+		// "./data/dataIngesterDefaultData/INDEX_RTS_RS.csv",
+		// "./data/dataIngesterDefaultData/JPYUSD.csv" };
+		// boolean DATA_IS_CLEAN = false
+		// boolean DATA_NEEDS_NORMALIZATION = false;
+		// String PREDICT_FILE = "INDEX_GSPC";
+		// String PREDICT_LABEL = "Open";
+
+		String[] DATA_FILE_NAMES = { "./data/BertClean.20140421.001/dat1.csv" };
+		boolean DATA_NEEDS_CLEANING = false;
+		boolean DATA_NEEDS_NORMALIZATION = false;
+		String PREDICT_FILE = "dat1";
+		String PREDICT_LABEL = "target";
 
 		// 2 means print everything
 		int DEBUG_LEVEL = 2;
 
 		DataIngester dataIngester = new DataIngester();
-		dataIngester.createData(DEBUG_LEVEL, DATA_FILE_NAMES, -1.0, 1.0);
+		dataIngester.createData(DEBUG_LEVEL, DATA_FILE_NAMES, 0, 1.0, DATA_NEEDS_CLEANING,
+				DATA_NEEDS_NORMALIZATION, PREDICT_FILE, PREDICT_LABEL);
 
 		TemporalMLDataSet temporal = null;
-		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1);
+		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1, PREDICT_FILE, PREDICT_LABEL);
 
 		// remember to add desired output values into the training set
 
