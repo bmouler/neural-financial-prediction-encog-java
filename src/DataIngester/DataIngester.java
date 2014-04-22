@@ -398,8 +398,7 @@ public class DataIngester {
 		TemporalMLDataSet result = new TemporalMLDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
 		// create description of the TemporalMLDataSet
-//		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
-		for (int dataSeriesNum = 0; dataSeriesNum < m_data.length; ++dataSeriesNum) {
+		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
 			TemporalDataDescription desc = null;
 			if (dataSeriesNum != predictedFieldIndex) {
 				// not a predicted field
