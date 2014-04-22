@@ -51,7 +51,7 @@ public class Regression_Predict {
 				MLData modelOutput = model.compute(modelInput);
 				
 				//get the results for this iteration
-				double predicted = modelOutput.getData(predictFieldIndex);
+				double predicted = modelOutput.getData(0); //zero due to only having one output
 				double actual = temporalDataset.getPoints().get(i).getData(predictFieldIndex);
 				double error = actual - predicted;
 				double errorPercent = ((actual - predicted) / actual) * 100;

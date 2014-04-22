@@ -398,7 +398,8 @@ public class DataIngester {
 		TemporalMLDataSet result = new TemporalMLDataSet(INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE);
 
 		// create description of the TemporalMLDataSet
-		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
+//		for (int dataSeriesNum = 0; dataSeriesNum < numberOfDataSeries; ++dataSeriesNum) {
+		for (int dataSeriesNum = 0; dataSeriesNum < m_data.length; ++dataSeriesNum) {
 			TemporalDataDescription desc = null;
 			if (dataSeriesNum != predictedFieldIndex) {
 				// not a predicted field
@@ -444,13 +445,23 @@ public class DataIngester {
 		if (DEBUG_LEVEL >= 1) {
 			System.out.println("Printing temporal data");
 			System.out.println("Summary:");
-			System.out.println("  Record count: " + result.getRecordCount());
+			System.out.println("  m_data.length: " + m_data.length);
+			System.out.println("  m_dates.length:" + m_dates.length);
+			System.out.println("  m_numDataSeries:" + m_numDataSeries);
+			System.out.println("  m_dataNames.length:" + m_dataNames.length);
+			System.out.println("  INPUT_WINDOW_SIZE:" + INPUT_WINDOW_SIZE);
+			System.out.println("  PREDICT_WINDOW_SIZE:" + PREDICT_WINDOW_SIZE);
+
+			System.out.println("  Temporal Record count: " + result.getRecordCount());
 			System.out.println("    Which is {the total number of records} minus "
-					+ "{the INPUT_WINDOW_SIZE} minus one");
+					+ "{the INPUT_WINDOW_SIZE} minus {one}");
 			System.out.println("          or " + m_dates.length + " - " + INPUT_WINDOW_SIZE
 					+ " - 1 = " + (m_dates.length - INPUT_WINDOW_SIZE - 1));
-			System.out.println("  Input size: " + result.getInputSize());
 			System.out.println("  Output neuron count: " + result.getOutputNeuronCount());
+			System.out.println("  Input size: " + result.getInputSize());
+			System.out.println("    Which is {INPUT_WINDOW_SIZE} * ({m_numDataSeries} - {PREDICT_WINDOW_SIZE})");
+			System.out.println("          or " + INPUT_WINDOW_SIZE + " * (" + m_numDataSeries
+					+ " - " + PREDICT_WINDOW_SIZE +") = " + result.getInputSize());
 		}
 
 		// print each imported entry
