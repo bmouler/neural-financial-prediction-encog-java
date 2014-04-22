@@ -42,6 +42,8 @@ public class Classification_Train {
 		if (DEBUG_LEVEL >= 1)
 			System.out.println("\n\nStarting training");
 
+		// TODO add config parameters for activation function
+		// TODO add config parameters for layers: number of hidden and number of visible?
 		// create a neural network, without using a factory
 		BasicNetwork network = new BasicNetwork();
 		network.addLayer(new BasicLayer(null,true,2));
