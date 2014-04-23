@@ -46,8 +46,8 @@ public class Classification_Train {
 		// TODO add config parameters for layers: number of hidden and number of visible?
 		// create a neural network, without using a factory
 		BasicNetwork network = new BasicNetwork();
-		network.addLayer(new BasicLayer(null,true,2));
-		network.addLayer(new BasicLayer(new ActivationSigmoid(),true,3));
+		network.addLayer(new BasicLayer(null,true,temporal.getInputNeuronCount()));
+		network.addLayer(new BasicLayer(new ActivationSigmoid(),true,10));
 		network.addLayer(new BasicLayer(new ActivationSigmoid(),false,1));
 		network.getStructure().finalizeStructure();
 		network.reset();

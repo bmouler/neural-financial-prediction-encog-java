@@ -32,10 +32,11 @@ public class __RUNME {
 			DataIngester dataIngester = new DataIngester();
 			dataIngester.createData(p.DEBUG_LEVEL, p.DATA_FILES, p.NORMALIZED_LOW,
 					p.NORMALIZED_HIGH, p.DATA_NEEDS_CLEANING, p.DATA_NEEDS_NORMALIZATION,
-					p.PREDICT_FILE, p.PREDICT_LABEL);
+					p.PREDICT_FILE, p.PREDICT_LABEL, p.TIME_LAGS);
 			int numberOfDataSeries = dataIngester.getNumberOfDataSeries();
-			int predictFieldIndex = dataIngester.getPredictFieldIndex(p.PREDICT_FILE,
-					p.PREDICT_LABEL);
+			int predictFieldIndex = dataIngester.getPredictFieldIndex(p.PREDICT_LABEL);
+//			int predictFieldIndex = dataIngester.getPredictFieldIndex(p.PREDICT_FILE,
+//					p.PREDICT_LABEL);
 			if (predictFieldIndex < 0) {
 				throw new Exception("Predict field not found.");
 			}

@@ -39,6 +39,7 @@ public class PropsXML {
 	public double NORMALIZED_HIGH;
 	public int INPUT_WINDOW_SIZE;
 	public int PREDICT_WINDOW_SIZE;
+	public int[] TIME_LAGS;
 
 	// training
 	public String ACTIVATION_FUNCTION;
@@ -66,7 +67,8 @@ public class PropsXML {
 		NORMALIZED_HIGH = GetDouble("NORMALIZED_HIGH");
 		INPUT_WINDOW_SIZE = GetInt("INPUT_WINDOW_SIZE");
 		PREDICT_WINDOW_SIZE = GetInt("PREDICT_WINDOW_SIZE");
-
+		TIME_LAGS = GetArrayOfInts(DEBUG_LEVEL, "TIME_LAG_");
+		
 		// training
 		ACTIVATION_FUNCTION = GetString("ACTIVATION_FUNCTION");
 		TARGET_ERROR = GetDouble("TARGET_ERROR");
@@ -126,6 +128,14 @@ public class PropsXML {
 	public String[] GetArrayOfStrings(int DEBUG_LEVEL, String label) {
 		List<String> listOfStrings = ListOfStringsWork(DEBUG_LEVEL, label);
 		return listOfStrings.toArray(new String[listOfStrings.size()]);
+	}
+
+	public int[] GetArrayOfInts(int DEBUG_LEVEL, String label) {
+		String[] strVals = GetArrayOfStrings(DEBUG_LEVEL, label);
+		int[] intVals = new int[strVals.length];
+		for (int i = 0; i < strVals.length; ++i)
+			intVals[i] = Integer.parseInt(strVals[i]);
+		return intVals;
 	}
 
 	public List<String> GetListOfStrings(int DEBUG_LEVEL, String label) {

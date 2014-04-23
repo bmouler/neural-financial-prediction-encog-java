@@ -20,6 +20,9 @@
 	<entry key="NORMALIZED_HIGH">1.0</entry>
 	<entry key="INPUT_WINDOW_SIZE">12</entry>
 	<entry key="PREDICT_WINDOW_SIZE">1</entry>
+	<entry key="TIME_LAG_0">1</entry>
+	<entry key="TIME_LAG_1">2</entry>
+	<entry key="TIME_LAG_2">3</entry>
 
 <!-- Training -->
 	<!-- Model Options -->

@@ -37,6 +37,17 @@ public class DataIngester {
 		return predictedField;
 	}
 
+	public int getPredictFieldIndex(String PREDICT_LABEL) {
+		int predictedField = -1;
+		for (int i = 0; i < m_dataNames.length; i++) {
+			if (m_dataNames[i].equals(PREDICT_LABEL)) {
+				predictedField = i;
+				continue;
+			}
+		}
+		return predictedField;
+	}
+
 	// Dates common to all data series
 	private String[] m_dates;
 
@@ -46,6 +57,193 @@ public class DataIngester {
 
 	public int getNumberOfDataSeries() {
 		return m_data.length;
+	}
+
+	// Read in data file in Berts format
+	public void readBertsData
+	(
+		int    DEBUG_LEVEL,
+		String dataFile,
+		int[]  desiredTimeLags
+	)
+	{
+
+		BufferedReader reader = null;
+		
+		try {
+			// Add default time lag of "1 day" if none were input
+			if (desiredTimeLags == null || desiredTimeLags.length == 0){
+				desiredTimeLags = new int[1];
+				desiredTimeLags[0] = 1;
+			}
+		
+			// Find maximum time lag
+			int maxTimeLag = desiredTimeLags[0];
+			for (int timeLagNum = 0; timeLagNum < desiredTimeLags.length; ++timeLagNum){
+				if (desiredTimeLags[timeLagNum] < 1)
+					throw new Exception("Time lags must each be > 0");
+
+				if (maxTimeLag < desiredTimeLags[timeLagNum])
+					maxTimeLag = desiredTimeLags[timeLagNum];
+			}
+		
+			String[] desiredDataSeriesIDs = new String[3];
+			desiredDataSeriesIDs[0] = "target";
+			desiredDataSeriesIDs[1] = "percent";
+			desiredDataSeriesIDs[2] = "volume";
+			
+			if (DEBUG_LEVEL >= 1)
+				System.out.println("Reading in data in file " + dataFile);
+
+			// Read in all file
+			ArrayList<String           > dataNames = new ArrayList<String           >();
+			ArrayList<String           > dates     = new ArrayList<String           >();
+			ArrayList<ArrayList<Double>> data      = new ArrayList<ArrayList<Double>>();
+
+			reader = new BufferedReader(new FileReader(dataFile));
+
+			String[] headers = reader.readLine().split(",");
+			for (int headerNum = 1; headerNum < headers.length; ++headerNum) {
+				dataNames.add(headers[headerNum]);
+				data.add(new ArrayList<Double>());
+			}
+
+			String dataLine;
+			while ((dataLine = reader.readLine()) != null) {
+				String[] dataLineVals = dataLine.split(",");
+	
+				String[] datePieces = dataLineVals[0].split("/");
+				if (datePieces[0].length() < 2)
+					datePieces[0] = "0" + datePieces[0];
+				if (datePieces[1].length() < 2)
+					datePieces[1] = "0" + datePieces[1];
+				dates.add(datePieces[2] + "-" + datePieces[0] + "_" + datePieces[1]);
+
+				for (int dataValNum = 1; dataValNum < dataLineVals.length; ++dataValNum)
+					data.get(dataValNum - 1).add(Double.parseDouble(dataLineVals[dataValNum]));
+			}
+
+			// Remove undesired data series
+			int dataSeriesNum = 0;
+			while (dataSeriesNum < dataNames.size()) {
+				boolean isDesiredDataSeries = false;
+				for (int desiredDataSeriesNameNum = 0; desiredDataSeriesNameNum < desiredDataSeriesIDs.length; ++desiredDataSeriesNameNum)
+					if (dataNames.get(dataSeriesNum).contains(desiredDataSeriesIDs[desiredDataSeriesNameNum])) {
+						isDesiredDataSeries = true;
+						break;
+					}
+
+				if (isDesiredDataSeries == false) {
+					dataNames.remove(dataSeriesNum);
+					data     .remove(dataSeriesNum);
+				}
+				else
+					++dataSeriesNum;
+			}
+
+			// Make various time-lagged versions of data
+			int numDataSeriesPerLag = dataNames.size();
+			for (int desiredTimeLagNum = 1; desiredTimeLagNum < desiredTimeLags.length; ++desiredTimeLagNum)
+			{
+				int numNonTargetDataSeries = 0;
+				for (dataSeriesNum = 0; dataSeriesNum< numDataSeriesPerLag; ++dataSeriesNum)
+				{
+					if (dataNames.get(dataSeriesNum).contains(desiredDataSeriesIDs[0]))
+						continue;
+					
+					dataNames.add(dataNames.get(dataSeriesNum));
+					data.add(new ArrayList<Double>());
+					for (int dateNum = 0; dateNum < dates.size(); ++dateNum)
+					{
+						data.get(numDataSeriesPerLag + (desiredTimeLagNum - 1)*(numDataSeriesPerLag - 1) + numNonTargetDataSeries).add(data.get(dataSeriesNum).get(dateNum));
+					}
+					++numNonTargetDataSeries;
+				}
+			}
+			
+			// Move "target" data to beginning for convenience
+			int targetDataSeriesNum = 0;
+			while (dataNames.get(targetDataSeriesNum).contains(desiredDataSeriesIDs[0]) == false)
+				++targetDataSeriesNum;
+			
+			dataNames.add(0, dataNames.get(targetDataSeriesNum));
+			data     .add(0, data     .get(targetDataSeriesNum));
+
+			dataNames.remove(targetDataSeriesNum + 1);
+			data     .remove(targetDataSeriesNum + 1);
+			
+			for (int dataNum = 0; dataNum < maxTimeLag - 1; ++dataNum)
+			{
+				dates      .remove(0);
+				data.get(0).remove(0);
+			}
+			
+			for (int desiredTimeLagNum = 0; desiredTimeLagNum < desiredTimeLags.length; ++desiredTimeLagNum)
+			{
+				for (dataSeriesNum = 0; dataSeriesNum < numDataSeriesPerLag - 1; ++dataSeriesNum)
+				{
+					dataNames.set(1 + desiredTimeLagNum*(numDataSeriesPerLag - 1) + dataSeriesNum,
+							dataNames.get(1 + desiredTimeLagNum*(numDataSeriesPerLag - 1) + dataSeriesNum) + "_delay" + desiredTimeLags[desiredTimeLagNum]);
+					
+					for (int dataNum = 0; dataNum < desiredTimeLags[desiredTimeLagNum] - 1; ++dataNum)
+					{
+						data.get(1 + desiredTimeLagNum*(numDataSeriesPerLag - 1) + dataSeriesNum).remove(data.get(1 + desiredTimeLagNum*(numDataSeriesPerLag - 1) + dataSeriesNum).size() - 1);
+					}		
+
+					for (int dataNum = 0; dataNum < maxTimeLag - desiredTimeLags[desiredTimeLagNum]; ++dataNum)
+					{
+						data.get(1 + desiredTimeLagNum*(numDataSeriesPerLag - 1) + dataSeriesNum).remove(0);
+					}		
+				}
+			}
+			
+			// Copy over to old-fashioned arrays for Encog usage
+			m_numDataSeries = dataNames.size();
+
+			m_dataNames = new String[dataNames.size()];
+			m_dates     = new String[dates.size()];
+			m_data      = new double[dataNames.size()][dates.size()];
+
+			for (dataSeriesNum = 0; dataSeriesNum < m_numDataSeries; ++dataSeriesNum) {
+				m_dataNames[dataSeriesNum] = dataNames.get(dataSeriesNum);
+				for (int dateNum = 0; dateNum < dates.size(); ++dateNum) {
+					if (dataSeriesNum == 0)
+						m_dates[dateNum] = dates.get(dateNum);
+					m_data[dataSeriesNum][dateNum] = data.get(dataSeriesNum).get(dateNum);
+				}
+			}
+
+			if (DEBUG_LEVEL >= 2) {
+				System.out.printf("  Number of valid data sets found                = %d\n", m_numDataSeries);
+				System.out.printf("  Number of data points in all valid datasets    = %d\n", m_dates.length);
+				System.out.printf("  Least recent date common to all valid datasets = %s\n", m_dates[0]);
+				System.out.printf("  Most recent date common to all valid datasets  = %s\n", m_dates[m_dates.length - 1]);
+				for (int dataNameNum = 0; dataNameNum < m_numDataSeries; ++dataNameNum)
+					System.out.printf("    Name of valid data series %2d = \"%s\"\n", dataNameNum, m_dataNames[dataNameNum]);
+			}
+			if (DEBUG_LEVEL >= 3) {
+				System.out.println("  Full list of data:");
+				for (int dateNum = 0; dateNum < dates.size(); ++dateNum) {
+					System.out.printf("      %6d : %s", dateNum, m_dates[dateNum]);
+					for (int dataNameNum = 0; dataNameNum < m_numDataSeries; ++dataNameNum)
+						System.out.printf("  %12.2f", m_data[dataNameNum][dateNum]);
+					System.out.printf("\n");
+				}
+			}
+		}catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null)
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
 	}
 
 	// Read in, temporally sort in chronologically-increasing order, and remove
@@ -322,14 +520,15 @@ public class DataIngester {
 
 	public void createData(int DEBUG_LEVEL, String[] listOfDataFiles, double NORMALIZED_LOW,
 			double NORMALIZED_HIGH, boolean DATA_NEEDS_CLEANING, boolean DATA_NEEDS_NORMALIZATION,
-			String PREDICT_FILE, String PREDICT_LABEL) {
+			String PREDICT_FILE, String PREDICT_LABEL, int[] TIME_LAGS) {
 
 		// start message
 		if (DEBUG_LEVEL >= 1)
 			System.out.println("Starting data import");
 
 		// read in and normalize data
-		readData(DEBUG_LEVEL, listOfDataFiles, DATA_NEEDS_CLEANING);
+		readBertsData(DEBUG_LEVEL, listOfDataFiles[0], TIME_LAGS);
+		//readData(DEBUG_LEVEL, listOfDataFiles, DATA_NEEDS_CLEANING);
 		if (DATA_NEEDS_NORMALIZATION) {
 			normalizeData(DEBUG_LEVEL, NORMALIZED_LOW, NORMALIZED_HIGH);
 		}
@@ -374,7 +573,8 @@ public class DataIngester {
 			String PREDICT_LABEL) {
 
 		// get target field
-		int predictedFieldIndex = getPredictFieldIndex(PREDICT_FILE, PREDICT_LABEL);
+		int predictedFieldIndex = getPredictFieldIndex(PREDICT_LABEL);
+		//int predictedFieldIndex = getPredictFieldIndex(PREDICT_FILE, PREDICT_LABEL);
 
 		return initTemporalDataSetWork(DEBUG_LEVEL, INPUT_WINDOW_SIZE, PREDICT_WINDOW_SIZE,
 				numberOfDataSeries, predictedFieldIndex);
@@ -489,6 +689,16 @@ public class DataIngester {
 		// String PREDICT_FILE = "INDEX_GSPC";
 		// String PREDICT_LABEL = "Open";
 
+		int[] TIME_LAGS = new int[3];
+		TIME_LAGS[0] = 4;
+		TIME_LAGS[1] = 2;
+		TIME_LAGS[2] = 3;
+		
+//		DataIngester di = new DataIngester();
+//		di.readBertsData(2, "./data/BertClean.20140421.001/dat1.csv", desiredTimeLags);
+//		
+//		int a = 0; while(a < 1){a = 0;}
+
 		String[] DATA_FILE_NAMES = { "./data/BertClean.20140421.001/dat1.csv" };
 		boolean DATA_NEEDS_CLEANING = false;
 		boolean DATA_NEEDS_NORMALIZATION = false;
@@ -500,7 +710,7 @@ public class DataIngester {
 
 		DataIngester dataIngester = new DataIngester();
 		dataIngester.createData(DEBUG_LEVEL, DATA_FILE_NAMES, 0, 1.0, DATA_NEEDS_CLEANING,
-				DATA_NEEDS_NORMALIZATION, PREDICT_FILE, PREDICT_LABEL);
+				DATA_NEEDS_NORMALIZATION, PREDICT_FILE, PREDICT_LABEL, TIME_LAGS);
 
 		TemporalMLDataSet temporal = null;
 		temporal = dataIngester.makeTemporalDataSet(DEBUG_LEVEL, 12, 1, PREDICT_FILE, PREDICT_LABEL);
