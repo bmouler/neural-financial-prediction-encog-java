@@ -4,13 +4,13 @@
 	<!-- All keys should be ALL_CAPS_WITH_UNDERSCORES for ease of reference. -->
 	<comment>Properties for Analysis App</comment>
 
-<!-- Debug printing controls -->
+	<!-- Debug printing controls -->
 	<!-- 0 = print nothing -->
 	<!-- 1 = print some things -->
 	<!-- 2 = print everything -->
 	<entry key="DEBUG_LEVEL">2</entry>
-	
-<!-- List of csv data files for import -->
+
+	<!-- List of csv data files for import -->
 	<entry key="DATA_NEEDS_CLEANING">true</entry>
 	<entry key="DATA_NEEDS_NORMALIZATION">true</entry>
 	<entry key="DATA_FILE_0">./data/dataIngesterDefaultData/INDEX_GSPC.csv</entry>
@@ -20,25 +20,31 @@
 	<entry key="DATA_FILE_4">./data/dataIngesterDefaultData/INDEX_RTS_RS.csv</entry>
 	<entry key="DATA_FILE_5">./data/dataIngesterDefaultData/JPYUSD.csv</entry>
 
-<!-- Temporal dataset -->
+	<!-- Data Series -->
+<!-- 	<entry key="TIME_LAG_0">4</entry> -->
+<!-- 	<entry key="TIME_LAG_1">1</entry> -->
+<!-- 	<entry key="TIME_LAG_2">7</entry> -->
+<!-- 	<entry key="TIME_LAG_3">2</entry> -->
+
+	<!-- Temporal dataset -->
 	<entry key="NORMALIZED_LOW">0</entry>
 	<entry key="NORMALIZED_HIGH">1.0</entry>
 	<entry key="INPUT_WINDOW_SIZE">12</entry>
 	<entry key="PREDICT_WINDOW_SIZE">1</entry>
 
-<!-- Training -->
+	<!-- Training -->
 	<!-- Model Options -->
-		<!-- Regression -->
-		<!-- Classification -->
-		<entry key="PREDICT_MODEL">Regression</entry>
+	<!-- Regression -->
+	<!-- Classification -->
+	<entry key="PREDICT_MODEL">Regression</entry>
 	<entry key="ACTIVATION_FUNCTION">?:B->SIGMOID->25:B->SIGMOID->?</entry>
-	<entry key="TARGET_ERROR">0.04</entry>
-		
-<!-- Predict -->
+	<entry key="TARGET_ERROR">1</entry>
+
+	<!-- Predict -->
 	<entry key="PREDICT_FILE">INDEX_GSPC</entry>
 	<entry key="PREDICT_LABEL">Open</entry>
-	
-<!-- Output -->
+
+	<!-- Output -->
 	<entry key="PRINT_DENORMALIZED">true</entry>
-	
+
 </properties>

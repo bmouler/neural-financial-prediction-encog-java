@@ -57,9 +57,16 @@ public class Classification_Predict {
 
 				// TODO how should the data be normalized for processing?
 				// TODO need to figure out what the output actual means to go any further
+				String outCome = null;
+				if (predicted == actual) {
+					outCome = "correct++";
+				} else {
+					outCome = "wrong----";
+				}
+					
 				if (DEBUG_LEVEL >= 1) {
-					System.out.printf(" %5d : %5.8f : %5.8f : %6.2f \n", point.getSequence(),
-							predicted, actual, 0f);
+					System.out.printf(" %5d : %5.8f : %5.8f : %6.2f : %s\n", point.getSequence(),
+							predicted, actual, 0f, outCome);
 				}
 
 				// Remove the earliest training element. Unlike when we produced training data,
