@@ -1,4 +1,4 @@
-package KevinThread;
+package Analysis;
 
 import org.encog.engine.network.activation.ActivationBiPolar;
 import org.encog.engine.network.activation.ActivationSigmoid;

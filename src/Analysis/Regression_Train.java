@@ -1,4 +1,4 @@
-package KevinThread;
+package Analysis;
 
 import org.encog.ml.MLMethod;
 import org.encog.ml.MLRegression;
