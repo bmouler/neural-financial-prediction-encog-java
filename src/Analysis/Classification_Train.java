@@ -2,12 +2,15 @@ package Analysis;
 
 import org.encog.engine.network.activation.ActivationBiPolar;
 import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.CalculateScore;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.temporal.TemporalMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.TrainingSetScore;
+import org.encog.neural.networks.training.anneal.NeuralSimulatedAnnealing;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
 public class Classification_Train {
@@ -46,7 +49,8 @@ public class Classification_Train {
 		MLDataSet trainingSet = temporal;
 
 		// train the neural network
-		final ResilientPropagation train = new ResilientPropagation(network, trainingSet);
+		CalculateScore score = new TrainingSetScore(trainingSet);
+		final NeuralSimulatedAnnealing train = new NeuralSimulatedAnnealing(network,score,10,2,1);
 
 		int epoch = 1;
 
