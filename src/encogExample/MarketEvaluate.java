@@ -42,12 +42,12 @@ import org.encog.persist.EncogDirectoryPersistence;
 public class MarketEvaluate {
 
 	enum Direction {
-		up, down
+		up, dn
 	};
 
 	public static Direction determineDirection(double d) {
 		if (d < 0)
-			return Direction.down;
+			return Direction.dn;
 		else
 			return Direction.up;
 	}
@@ -129,10 +129,15 @@ public class MarketEvaluate {
 
 			count++;
 
-			System.out.println("Day " + count + ":actual="
-					+ format.format(actual) + "(" + actualDirection + ")"
-					+ ",predict=" + format.format(predict) + "("
-					+ predictDirection + ")" + ",diff=" + diff);
+			String wasCorrect = (actualDirection == predictDirection) ? "++" : "--";
+			System.out.printf("Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",
+			count, actual, actualDirection, predict, predictDirection, diff, wasCorrect);
+
+			
+//			System.out.println("Day " + count + ":actual="
+//					+ format.format(actual) + "(" + actualDirection + ")"
+//					+ ",predict=" + format.format(predict) + "("
+//					+ predictDirection + ")" + ",diff=" + diff);
 
 		}
 		double percent = (double) correct / (double) count;
