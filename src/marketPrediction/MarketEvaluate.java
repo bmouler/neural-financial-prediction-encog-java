@@ -21,7 +21,7 @@
  * and trademarks visit:
  * http://www.heatonresearch.com/copyright
  */
-package encogExample;
+package marketPrediction;
 
 import java.io.File;
 import java.text.DecimalFormat;
