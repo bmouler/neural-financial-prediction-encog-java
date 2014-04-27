@@ -1,0 +1,10 @@
+Flags to be implemented:
+
+- lag
+- predict window
+- input window
+- number of neurons
+- number of layers
+- training algorithm
+- data sets
+- training threshold
