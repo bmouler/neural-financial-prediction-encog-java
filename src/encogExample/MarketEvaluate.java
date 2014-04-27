@@ -54,36 +54,36 @@ public class MarketEvaluate {
 
 	public static MarketMLDataSet grabData() {
 		MarketLoader loader = new YahooFinanceLoader();
-		MarketMLDataSet result = new MarketMLDataSet(loader,
-				Config.INPUT_WINDOW, Config.PREDICT_WINDOW);
-		MarketDataDescription desc = new MarketDataDescription(Config.TICKER,
-				MarketDataType.CLOSE, true, true);
+		MarketMLDataSet result = new MarketMLDataSet(loader, Config.INPUT_WINDOW,
+				Config.PREDICT_WINDOW);
+		MarketDataDescription desc = new MarketDataDescription(Config.TICKER, MarketDataType.CLOSE,
+				true, true);
 		result.addDescription(desc);
 
 		MarketDataDescription desc2 = new MarketDataDescription(Config.TICKER2,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc2);
-		
+
 		MarketDataDescription desc3 = new MarketDataDescription(Config.TICKER3,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc3);
-		
+
 		MarketDataDescription desc4 = new MarketDataDescription(Config.TICKER4,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc4);
-		
+
 		MarketDataDescription desc5 = new MarketDataDescription(Config.TICKER5,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc5);
-		
+
 		MarketDataDescription desc6 = new MarketDataDescription(Config.TICKER6,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc6);
-		
+
 		MarketDataDescription desc7 = new MarketDataDescription(Config.TICKER7,
 				MarketDataType.CLOSE, true, false);
 		result.addDescription(desc7);
-		
+
 		Calendar end = new GregorianCalendar();// end today
 		Calendar begin = (Calendar) end.clone();// begin 30 days ago
 		begin.add(Calendar.DATE, -200);
@@ -97,14 +97,14 @@ public class MarketEvaluate {
 
 	public static void evaluate(File dataDir) {
 
-		File file = new File(dataDir,Config.NETWORK_FILE);
+		File file = new File(dataDir, Config.NETWORK_FILE);
 
 		if (!file.exists()) {
 			System.out.println("Can't read file: " + file.getAbsolutePath());
 			return;
 		}
 
-		BasicNetwork network = (BasicNetwork)EncogDirectoryPersistence.loadObject(file);	
+		BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(file);
 
 		MarketMLDataSet data = grabData();
 
@@ -129,21 +129,16 @@ public class MarketEvaluate {
 
 			count++;
 
+			if (Config.DEBUG_LEVEL >= 2) {
 			String wasCorrect = (actualDirection == predictDirection) ? "++" : "--";
-			System.out.printf("Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",
-			count, actual, actualDirection, predict, predictDirection, diff, wasCorrect);
-
-			
-//			System.out.println("Day " + count + ":actual="
-//					+ format.format(actual) + "(" + actualDirection + ")"
-//					+ ",predict=" + format.format(predict) + "("
-//					+ predictDirection + ")" + ",diff=" + diff);
-
+			System.out.printf(
+					"Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",
+					count, actual, actualDirection, predict, predictDirection, diff, wasCorrect);
+			}
 		}
 		double percent = (double) correct / (double) count;
 		System.out.println("Direction correct:" + correct + "/" + count);
-		System.out.println("Directional Accuracy:"
-				+ format.format(percent * 100) + "%");
+		System.out.println("Directional Accuracy:" + format.format(percent * 100) + "%");
 
 	}
 }
