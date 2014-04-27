@@ -35,6 +35,8 @@ import org.encog.ml.data.market.TickerSymbol;
  * 
  */
 public class Config {
+	public static final int DEBUG_LEVEL = 2;
+	
 	public static final String TRAINING_FILE = "marketData.egb";
 	public static final String NETWORK_FILE = "marketNetwork.eg";
 //	public static final int TRAINING_MINUTES = 1;
