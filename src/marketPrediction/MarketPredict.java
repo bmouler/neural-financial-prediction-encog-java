@@ -44,10 +44,10 @@ public class MarketPredict {
 		{
 			File dataDir = new File(args[0]);
 			if( args[1].equalsIgnoreCase("generate") ) {
-				MarketBuildTraining.generate(dataDir);
+				MarketBuildTraining.generate(null, dataDir);
 			} 
 			else if( args[1].equalsIgnoreCase("train") ) {
-				MarketTrain.train(dataDir);
+				MarketTrain.train(null, dataDir);
 			} 
 			else if( args[1].equalsIgnoreCase("evaluate") ) {
 				MarketEvaluate.evaluate(dataDir);

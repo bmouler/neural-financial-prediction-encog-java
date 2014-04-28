@@ -1,26 +1,3 @@
-/*
- * Encog(tm) Java Examples v3.2
- * http://www.heatonresearch.com/encog/
- * https://github.com/encog/encog-java-examples
- *
- * Copyright 2008-2013 Heaton Research, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *   
- * For more information on Heaton Research copyrights, licenses 
- * and trademarks visit:
- * http://www.heatonresearch.com/copyright
- */
 package marketPrediction;
 
 import java.io.File;
@@ -28,21 +5,32 @@ import java.io.File;
 import org.encog.Encog;
 
 /**
- * Use the saved market neural network, and now attempt to predict for today, and the last 60 days
- * and see what the results are.
+ * Driver for one complete network training and evaluation
  */
 public class MarketPredict__RUN {
 
-	public static void main(String[] args) {
+	final static String WORKING_DIR = "./Configs"; // no backslash
+	final static String DATA_DIR    = "./data/MarketPredict"; // no backslash
+	final static String PROPS_FILE  = "config.xml";
 
-		File dataDir = new File("./data/MarketPredict");
+	public static void main(String[] args) throws Exception {
 
-		MarketBuildTraining.generate(dataDir);
+		// Read in properties file
+		PropsXML p = new PropsXML(WORKING_DIR, PROPS_FILE);
+		
+		// Declare directory where to write/read results
+		File dataDir = new File(DATA_DIR);
 
-		MarketTrain.train(dataDir);
+		// Generate temporal data series and network structure
+		MarketBuildTraining.generate(p, dataDir);
 
+		// Train network with temporal data
+		MarketTrain.train(p, dataDir);
+
+		// Evalute trained network on test data
 		MarketEvaluate.evaluate(dataDir);
 
+		// Prune network
 		// MarketPrune.incremental(dataDir);
 
 		Encog.getInstance().shutdown();

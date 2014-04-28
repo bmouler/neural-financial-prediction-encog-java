@@ -1,26 +1,3 @@
-/*
- * Encog(tm) Java Examples v3.2
- * http://www.heatonresearch.com/encog/
- * https://github.com/encog/encog-java-examples
- *
- * Copyright 2008-2013 Heaton Research, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *   
- * For more information on Heaton Research copyrights, licenses 
- * and trademarks visit:
- * http://www.heatonresearch.com/copyright
- */
 package marketPrediction;
 
 import java.io.File;
@@ -30,81 +7,80 @@ import java.util.GregorianCalendar;
 import org.encog.ml.data.market.MarketDataDescription;
 import org.encog.ml.data.market.MarketDataType;
 import org.encog.ml.data.market.MarketMLDataSet;
+import org.encog.ml.data.market.TickerSymbol;
 import org.encog.ml.data.market.loader.MarketLoader;
 import org.encog.ml.data.market.loader.YahooFinanceLoader;
 import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.simple.EncogUtility;
 
 /**
  * Build the training data for the prediction and store it in an Encog file for
  * later training.
- * 
- * @author jeff
- * 
  */
 public class MarketBuildTraining {
 
-	public static void generate(File dataDir) {
+	public static void generate(PropsXML p, File dataDir) {
 		
+		if (p.DEBUG_LEVEL >= 1)
+			System.out.println("Generating temporal data series...");
+		
+		// Data will come from Yahoo! Finance
 		final MarketLoader loader = new YahooFinanceLoader();
-		final MarketMLDataSet market = new MarketMLDataSet(loader,
-				Config.INPUT_WINDOW, Config.PREDICT_WINDOW);
-		final MarketDataDescription desc = new MarketDataDescription(
-				Config.TICKER, MarketDataType.CLOSE, true, true);
-		market.addDescription(desc);
 		
-		final MarketDataDescription desc2 = new MarketDataDescription(
-				Config.TICKER2, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc2);
-		
-		final MarketDataDescription desc3 = new MarketDataDescription(
-				Config.TICKER3, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc3);
-		
-		final MarketDataDescription desc4 = new MarketDataDescription(
-				Config.TICKER4, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc4);
-		
-		final MarketDataDescription desc5 = new MarketDataDescription(
-				Config.TICKER5, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc5);
-		
-		final MarketDataDescription desc6 = new MarketDataDescription(
-				Config.TICKER6, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc6);
-		
-		final MarketDataDescription desc7 = new MarketDataDescription(
-				Config.TICKER7, MarketDataType.CLOSE, true, false);
-		market.addDescription(desc7);
+		// Set up data set
+		final MarketMLDataSet market = 
+			new MarketMLDataSet(loader, p.INPUT_WINDOW, p.PREDICT_WINDOW);
 
-		Calendar end = new GregorianCalendar();// end today
-		Calendar begin = (Calendar) end.clone();// begin 30 days ago
+		// Add stock tickers
+		int numInputDataSeries = 0;
+		for (int tickerNum = 0; tickerNum < p.TICKERS.length; ++tickerNum) {
+			MarketDataDescription desc = 
+				new MarketDataDescription(new TickerSymbol(p.TICKERS[tickerNum]), MarketDataType.CLOSE, p.IS_INPUTS[tickerNum], p.IS_PREDICTS[tickerNum]);
+			market.addDescription(desc);
+			numInputDataSeries += (p.IS_INPUTS[tickerNum] == true) ? 1 : 0;
+		}
 		
-		// Gather training data for the last 20 years, stopping 60 days short of today.
-		// The 60 days will be used to evaluate prediction.
-		begin.add(Calendar.DATE, -200);
-		end.add(Calendar.DATE, -200);
-		begin.add(Calendar.YEAR, -20);
+		// Set beg and end dates of data to use for training
+		Calendar end = new GregorianCalendar();
+		Calendar beg = (Calendar) end.clone();
 		
-		market.load(begin.getTime(), end.getTime());
+		beg.add(Calendar.DATE, -p.TRAIN_END_DAYS_AGO);
+		end.add(Calendar.DATE, -p.TRAIN_END_DAYS_AGO);
+		beg.add(Calendar.DATE, -p.TRAIN_BEG_DAYS_AGO);
+		
+		market.load(beg.getTime(), end.getTime());
+		
+		// Generate temporal data series
 		market.generate();
-		EncogUtility.saveEGB(new File(dataDir,Config.TRAINING_FILE), market);
 
-		// create a network
-		final BasicNetwork network = EncogUtility.simpleFeedForward(
+		// Save data series to file
+		EncogUtility.saveEGB(new File(dataDir, p.TRAINING_FILE), market);
+
+		// Create a network
+		final BasicNetwork network = 
+			EncogUtility.simpleFeedForward(
 				market.getInputSize(), 
-				Config.HIDDEN1_COUNT, 
-				Config.HIDDEN2_COUNT, 
+				p.HIDDEN1_COUNT, 
+				p.HIDDEN2_COUNT, 
 				market.getIdealSize(), 
-				true);	
+				true
+			);
 
-		// print
-		System.out.println("The input size is: "+market.getInputSize());
+		// Save the network and the training
+		EncogDirectoryPersistence.saveObject(new File(dataDir, p.NETWORK_FILE), network);
+
+		// Print some useful info
+		if (p.DEBUG_LEVEL >= 2) {
+			System.out.println("  Number of input data series      : " + numInputDataSeries);
+			System.out.println("  Number of input nodes            : " + market.getInputSize());
+			System.out.println("  Number of nodes in hidden layer 1: " + p.HIDDEN1_COUNT);
+			System.out.println("  Number of nodes in hidden layer 2: " + p.HIDDEN2_COUNT);
+			System.out.println("  Number of output nodes           : " + market.getIdealSize());
+		}
+
+		if (p.DEBUG_LEVEL >= 1)
+			System.out.println("  Done generating temporal data series...");
 		
-		
-		// save the network and the training
-		EncogDirectoryPersistence.saveObject(new File(dataDir,Config.NETWORK_FILE), network);
 	}
 }
