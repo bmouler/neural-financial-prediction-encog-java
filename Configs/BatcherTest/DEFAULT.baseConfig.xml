@@ -43,8 +43,8 @@
 	<entry key="IS_PREDICT_6">false</entry>
 	<entry key="TRAIN_BEG_DAYS_AGO">7300</entry>
 	<entry key="TRAIN_END_DAYS_AGO">200</entry>
-	<entry key="TRAINING_FILE">marketData.egb</entry>
-	<entry key="NETWORK_FILE">marketNetwork.egb</entry>
+	<entry key="TRAINING_FILE">data.egb</entry>
+	<entry key="NETWORK_FILE">betwork.eg</entry>
 
 	<!-- START DO NOT SET -->
 	<!-- START DO NOT SET -->
