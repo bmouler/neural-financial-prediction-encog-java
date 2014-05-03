@@ -38,8 +38,8 @@
     <!-- <entry key="BPROP_MOMENTUM">0.3</entry> -->
 
 	<!-- Resilient Propagation -->
-    <entry key="TRAIN_ALG">RPROP</entry>
-    <entry key="RPROP_TYPE">RPROPp</entry>
+<!--     <entry key="TRAIN_ALG">RPROP</entry> -->
+<!--     <entry key="RPROP_TYPE">RPROPp</entry> -->
     <!-- <entry key="RPROP_TYPE">RPROPm</entry> -->
     <!-- <entry key="RPROP_TYPE">iRPROPp</entry> -->
     <!-- <entry key="RPROP_TYPE">iRPROPm</entry> -->
@@ -49,22 +49,25 @@
     <!-- <entry key="QPROP_LEARNING_RATE">2.0</entry> -->
 
 	<!-- Manhattan Propagation -->
-    <!-- <entry key="TRAIN_ALG">MPROP</entry> -->
-    <!-- <entry key="MPROP_LEARNING_RATE">0.00001</entry> -->
+<!--     <entry key="TRAIN_ALG">MPROP</entry> -->
+<!--     <entry key="MPROP_LEARNING_RATE">0.00001</entry> -->
 
 	<!-- Levenberg Marquardt Propagation -->
-    <!-- <entry key="TRAIN_ALG">LPROP</entry> -->
+<!--     <entry key="TRAIN_ALG">LPROP</entry> -->
 
 	<!-- Scaled Conjugate Gradient Propagation -->
-    <!-- <entry key="TRAIN_ALG">SPROP</entry> -->
+<!--     <entry key="TRAIN_ALG">SPROP</entry> -->
+<!--     <entry key="SPROP_LEARNING_RATE">0.01</entry> -->
+    
 
 	<!-- Genetic Algorithm -->
     <!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
 
 	<!-- Simulated Annealing -->
-    <!-- <entry key="ANNEAL_START_TEMP">10</entry> -->
-    <!-- <entry key="ANNEAL_STOP_TEMP">2</entry> -->
-    <!-- <entry key="ANNEAL_CYCLES">10</entry> -->
+	<entry key="TRAIN_ALG">ANNEAL</entry>
+    <entry key="ANNEAL_START_TEMP">10</entry>
+    <entry key="ANNEAL_STOP_TEMP">2</entry>
+    <entry key="ANNEAL_CYCLES">10</entry>
 
 <!-- List of csv data files for import -->
 	<entry key="DATA_NEEDS_CLEANING">false</entry>
