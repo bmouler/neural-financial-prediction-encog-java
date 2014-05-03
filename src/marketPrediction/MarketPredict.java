@@ -50,9 +50,13 @@ public class MarketPredict {
 				MarketTrain.train(null, dataDir);
 			} 
 			else if( args[1].equalsIgnoreCase("evaluate") ) {
-				MarketEvaluate.evaluate(dataDir);
+				// note: requires a PropsXML now
+				// note: I ran around the code for about 20 minutes due to refs to Config.java
+				//       then I deleted Config.java and ref'd PropsXML where needed. -Kevin
+				//MarketEvaluate.evaluate(dataDir);
 			} else if( args[1].equalsIgnoreCase("prune") ) {
-				MarketPrune.incremental(dataDir);
+				// note: see above for same Config.java issue -Kevin
+				//MarketPrune.incremental(dataDir);
 			} 
 			Encog.getInstance().shutdown();
 		}
