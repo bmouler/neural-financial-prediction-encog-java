@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- All keys should be ALL_CAPS_WITH_UNDERSCORES for ease of reference. -->
+	<comment>Properties for Market Prediction App</comment>
+
+	<!-- Debug printing controls -->
+	<!-- 0 = print nothing -->
+	<!-- 1 = print some things -->
+	<!-- 2 = print everything -->
+	<entry key="DEBUG_LEVEL">1</entry>
+
+	<!-- Batching settings -->
+	<entry key="BATCH_RUN_LABEL">Test</entry>
+	<entry key="KILL_IF_LONG_RUNNING">true</entry>
+	<entry key="KILL_IF_LONG_RUNNING_SECONDS">300</entry>
+
+	<!-- Network setup parameters -->
+	<entry key="PREDICT_WINDOW_STEP">1</entry>
+	<entry key="PREDICT_WINDOW_START">1</entry>
+	<entry key="PREDICT_WINDOW_END">1</entry>
+	<entry key="INPUT_WINDOW_STEP">20</entry>
+	<entry key="INPUT_WINDOW_START">20</entry>
+	<entry key="INPUT_WINDOW_END">20</entry>
+	<entry key="HIDDEN1_COUNT_STEP">25</entry>
+	<entry key="HIDDEN1_COUNT_START">0</entry>
+	<entry key="HIDDEN1_COUNT_END">50</entry>
+	<entry key="HIDDEN2_COUNT_STEP">25</entry>
+	<entry key="HIDDEN2_COUNT_START">0</entry>
+	<entry key="HIDDEN2_COUNT_END">50</entry>
+
+	<!-- Training algorithm and properties -->
+	<entry key="TRAIN_THRESH_STEP">0.001</entry>
+	<entry key="TRAIN_THRESH_START">0.001</entry>
+	<entry key="TRAIN_THRESH_END">0.001</entry>
+
+	<!-- Back Propagation -->
+	<entry key="TRAIN_ALG_BPROP">true</entry>
+	<entry key="BPROP_LEARNING_RATE_STEP">0.7</entry>
+	<entry key="BPROP_LEARNING_RATE_START">0.7</entry>
+	<entry key="BPROP_LEARNING_RATE_END">0.7</entry>
+	<entry key="BPROP_MOMENTUM_STEP">0.3</entry>
+	<entry key="BPROP_MOMENTUM_START">0.3</entry>
+	<entry key="BPROP_MOMENTUM_END">0.3</entry>
+
+	<!-- Resilient Propagation -->
+	<entry key="TRAIN_ALG_RPROP">true</entry>
+	<entry key="RPROP_TYPE_0">RPROPp</entry>
+	<entry key="RPROP_TYPE_1">RPROPm</entry>
+	<entry key="RPROP_TYPE_2">iRPROPp</entry>
+	<entry key="RPROP_TYPE_3">iRPROPm</entry>
+
+	<!-- Quick Propagation -->
+	<entry key="TRAIN_ALG_QPROP">true</entry>
+	<entry key="QPROP_LEARNING_RATE_STEP">2.0</entry>
+	<entry key="QPROP_LEARNING_RATE_START">2.0</entry>
+	<entry key="QPROP_LEARNING_RATE_END">2.0</entry>
+
+	<!-- Manhattan Propagation -->
+	<entry key="TRAIN_ALG_MPROP">true</entry>
+	<entry key="MPROP_LEARNING_RATE_STEP">0.00001</entry>
+	<entry key="MPROP_LEARNING_RATE_START">0.00001</entry>
+	<entry key="MPROP_LEARNING_RATE_END">0.00001</entry>
+
+	<!-- Levenberg Marquardt Propagation -->
+	<!-- TODO resolve memory issue and try to use -->
+	<entry key="TRAIN_ALG_LPROP">false</entry>
+
+	<!-- Scaled Conjugate Gradient Propagation -->
+	<entry key="TRAIN_ALG_SPROP">true</entry>
+	<entry key="SPROP_LEARNING_RATE_STEP">0.01</entry>
+	<entry key="SPROP_LEARNING_RATE_START">0.01</entry>
+	<entry key="SPROP_LEARNING_RATE_END">0.01</entry>
+
+	<!-- Genetic Algorithm -->
+	<!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
+
+	<!-- Simulated Annealing -->
+	<entry key="TRAIN_ALG_ANNEAL">true</entry>
+	<entry key="ANNEAL_START_TEMP_STEP">10</entry>
+	<entry key="ANNEAL_START_TEMP_START">10</entry>
+	<entry key="ANNEAL_START_TEMP_END">10</entry>
+	<entry key="ANNEAL_STOP_TEMP_STEP">2</entry>
+	<entry key="ANNEAL_STOP_TEMP_START">2</entry>
+	<entry key="ANNEAL_STOP_TEMP_END">2</entry>
+	<entry key="ANNEAL_CYCLES_STEP">10</entry>
+	<entry key="ANNEAL_CYCLES_START">10</entry>
+	<entry key="ANNEAL_CYCLES_END">10</entry>
+
+</properties>
