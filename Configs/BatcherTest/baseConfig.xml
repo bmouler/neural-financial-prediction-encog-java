@@ -8,7 +8,7 @@
 	<!-- 0 = print nothing -->
 	<!-- 1 = print some things -->
 	<!-- 2 = print everything -->
-	<entry key="DEBUG_LEVEL">1</entry>
+	<entry key="DEBUG_LEVEL">3</entry>
 
 	<!-- Label for this execution -->
 	<entry key="RUN_LABEL">Single</entry>
