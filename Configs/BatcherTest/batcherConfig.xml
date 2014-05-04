@@ -12,8 +12,13 @@
 
 	<!-- Batching settings -->
 	<entry key="BATCH_RUN_LABEL">Test</entry>
-	<entry key="KILL_IF_LONG_RUNNING">true</entry>
-	<entry key="KILL_IF_LONG_RUNNING_SECONDS">300</entry>
+	
+	<!-- MiniThreadManager settings -->
+	<entry key="MTM_DEBUG_LEVEL">5</entry>
+	<entry key="MTM_MAX_THREADS_ACTIVE">6</entry>
+	<entry key="MTM_UPDATE_DELAY_IN_MILLI">10000</entry>
+	<entry key="MTM_KILL_IF_LONG_RUNNING">true</entry>
+	<entry key="MTM_KILL_TIME_IN_MILLI">60000</entry>
 
 	<!-- Network setup parameters -->
 	<entry key="PREDICT_WINDOW_STEP">1</entry>
@@ -67,7 +72,7 @@
 	<entry key="TRAIN_ALG_LPROP">false</entry>
 
 	<!-- Scaled Conjugate Gradient Propagation -->
-	<entry key="TRAIN_ALG_SPROP">true</entry>
+	<entry key="TRAIN_ALG_SPROP">false</entry>
 	<entry key="SPROP_LEARNING_RATE_STEP">0.01</entry>
 	<entry key="SPROP_LEARNING_RATE_START">0.01</entry>
 	<entry key="SPROP_LEARNING_RATE_END">0.01</entry>
@@ -76,7 +81,7 @@
 	<!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
 
 	<!-- Simulated Annealing -->
-	<entry key="TRAIN_ALG_ANNEAL">true</entry>
+	<entry key="TRAIN_ALG_ANNEAL">false</entry>
 	<entry key="ANNEAL_START_TEMP_STEP">10</entry>
 	<entry key="ANNEAL_START_TEMP_START">10</entry>
 	<entry key="ANNEAL_START_TEMP_END">10</entry>

@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="JARs/google-gson-2.2.4/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="JARs/encog-core-3.2.0.jar" sourcepath="/Users/kr77/.m2/repository/org/encog/encog-core/3.2.0/encog-core-3.2.0-sources.jar"/>
 	<classpathentry kind="lib" path="JARs/commons-math3-3.0.jar"/>
+	<classpathentry kind="lib" path="JARs/joda-time-2.3/joda-time-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -4,77 +4,90 @@
 	<!-- All keys should be ALL_CAPS_WITH_UNDERSCORES for ease of reference. -->
 	<comment>Properties for Market Prediction App</comment>
 
-<!-- Debug printing controls -->
+	<!-- Debug printing controls -->
 	<!-- 0 = print nothing -->
 	<!-- 1 = print some things -->
 	<!-- 2 = print everything -->
-	<entry key="DEBUG_LEVEL">1</entry>
-	
-<!-- Network setup parameters -->
-    <entry key="PREDICT_WINDOW">1</entry>
-    <entry key="INPUT_WINDOW">20</entry>
-    <entry key="HIDDEN1_COUNT">140</entry>
-    <entry key="HIDDEN2_COUNT">7</entry>
+	<entry key="DEBUG_LEVEL">4</entry>
 
-<!-- Data parameters -->
-	<entry key="TICKER_0">^GSPC</entry> <entry key="IS_INPUT_0">true</entry> <entry key="IS_PREDICT_0">true</entry>
-	<entry key="TICKER_1">^VIX</entry>  <entry key="IS_INPUT_1">true</entry> <entry key="IS_PREDICT_1">false</entry>
-	<entry key="TICKER_2">^TNX</entry>  <entry key="IS_INPUT_2">true</entry> <entry key="IS_PREDICT_2">false</entry>
-	<entry key="TICKER_3">^IXIC</entry> <entry key="IS_INPUT_3">true</entry> <entry key="IS_PREDICT_3">false</entry>
-	<entry key="TICKER_4">^UTY</entry>  <entry key="IS_INPUT_4">true</entry> <entry key="IS_PREDICT_4">false</entry>
-	<entry key="TICKER_5">^FVX</entry>  <entry key="IS_INPUT_5">true</entry> <entry key="IS_PREDICT_5">false</entry>
-	<entry key="TICKER_6">^BKX</entry>  <entry key="IS_INPUT_6">true</entry> <entry key="IS_PREDICT_6">false</entry>
-    <entry key="TRAIN_BEG_DAYS_AGO">7300</entry>
-    <entry key="TRAIN_END_DAYS_AGO">200</entry>
-    <entry key="TRAINING_FILE">marketData.egb</entry>
-    <entry key="NETWORK_FILE">marketNetwork.egb</entry>
+	<!-- Network setup parameters -->
+	<entry key="PREDICT_WINDOW">1</entry>
+	<entry key="INPUT_WINDOW">20</entry>
+	<entry key="HIDDEN1_COUNT">140</entry>
+	<entry key="HIDDEN2_COUNT">7</entry>
 
-<!-- Training algorithm and properties -->
-    <entry key="TRAIN_THRESH">0.001</entry>
+	<!-- Data parameters -->
+	<entry key="TICKER_0">^GSPC</entry>
+	<entry key="IS_INPUT_0">true</entry>
+	<entry key="IS_PREDICT_0">true</entry>
+	<entry key="TICKER_1">^VIX</entry>
+	<entry key="IS_INPUT_1">true</entry>
+	<entry key="IS_PREDICT_1">false</entry>
+	<entry key="TICKER_2">^TNX</entry>
+	<entry key="IS_INPUT_2">true</entry>
+	<entry key="IS_PREDICT_2">false</entry>
+	<entry key="TICKER_3">^IXIC</entry>
+	<entry key="IS_INPUT_3">true</entry>
+	<entry key="IS_PREDICT_3">false</entry>
+	<entry key="TICKER_4">^UTY</entry>
+	<entry key="IS_INPUT_4">true</entry>
+	<entry key="IS_PREDICT_4">false</entry>
+	<entry key="TICKER_5">^FVX</entry>
+	<entry key="IS_INPUT_5">true</entry>
+	<entry key="IS_PREDICT_5">false</entry>
+	<entry key="TICKER_6">^BKX</entry>
+	<entry key="IS_INPUT_6">true</entry>
+	<entry key="IS_PREDICT_6">false</entry>
+	<entry key="TRAIN_BEG_DAYS_AGO">7300</entry>
+	<entry key="TRAIN_END_DAYS_AGO">200</entry>
+	<entry key="TRAINING_FILE">marketData.egb</entry>
+	<entry key="NETWORK_FILE">marketNetwork.eg</entry>
+
+	<!-- Training algorithm and properties -->
+	<entry key="TRAIN_THRESH">0.001</entry>
 
 	<!-- Back Propagation -->
-    <!-- <entry key="TRAIN_ALG">BPROP</entry> -->
-    <!-- <entry key="BPROP_LEARNING_RATE">0.7</entry> -->
-    <!-- <entry key="BPROP_MOMENTUM">0.3</entry> -->
+	<entry key="TRAIN_ALG">BPROP</entry>
+	<entry key="BPROP_LEARNING_RATE">0.7</entry>
+	<entry key="BPROP_MOMENTUM">0.3</entry>
 
 	<!-- Resilient Propagation -->
-<!--     <entry key="TRAIN_ALG">RPROP</entry> -->
-<!--     <entry key="RPROP_TYPE">RPROPp</entry> -->
-    <!-- <entry key="RPROP_TYPE">RPROPm</entry> -->
-    <!-- <entry key="RPROP_TYPE">iRPROPp</entry> -->
-    <!-- <entry key="RPROP_TYPE">iRPROPm</entry> -->
-    
+	<!-- <entry key="TRAIN_ALG">RPROP</entry> -->
+	<!-- <entry key="RPROP_TYPE">RPROPp</entry> -->
+	<!-- <entry key="RPROP_TYPE">RPROPm</entry> -->
+	<!-- <entry key="RPROP_TYPE">iRPROPp</entry> -->
+	<!-- <entry key="RPROP_TYPE">iRPROPm</entry> -->
+
 	<!-- Quick Propagation -->
-    <!-- <entry key="TRAIN_ALG">QPROP</entry> -->
-    <!-- <entry key="QPROP_LEARNING_RATE">2.0</entry> -->
+	<!-- <entry key="TRAIN_ALG">QPROP</entry> -->
+	<!-- <entry key="QPROP_LEARNING_RATE">2.0</entry> -->
 
 	<!-- Manhattan Propagation -->
-<!--     <entry key="TRAIN_ALG">MPROP</entry> -->
-<!--     <entry key="MPROP_LEARNING_RATE">0.00001</entry> -->
+	<!-- <entry key="TRAIN_ALG">MPROP</entry> -->
+	<!-- <entry key="MPROP_LEARNING_RATE">0.00001</entry> -->
 
 	<!-- Levenberg Marquardt Propagation -->
-<!--     <entry key="TRAIN_ALG">LPROP</entry> -->
+	<!-- <entry key="TRAIN_ALG">LPROP</entry> -->
 
 	<!-- Scaled Conjugate Gradient Propagation -->
-<!--     <entry key="TRAIN_ALG">SPROP</entry> -->
-<!--     <entry key="SPROP_LEARNING_RATE">0.01</entry> -->
-    
+	<!-- <entry key="TRAIN_ALG">SPROP</entry> -->
+	<!-- <entry key="SPROP_LEARNING_RATE">0.01</entry> -->
 
 	<!-- Genetic Algorithm -->
-    <!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
+	<!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
 
 	<!-- Simulated Annealing -->
-	<entry key="TRAIN_ALG">ANNEAL</entry>
-    <entry key="ANNEAL_START_TEMP">10</entry>
-    <entry key="ANNEAL_STOP_TEMP">2</entry>
-    <entry key="ANNEAL_CYCLES">10</entry>
+	<!-- <entry key="TRAIN_ALG">ANNEAL</entry> -->
+	<!-- <entry key="ANNEAL_START_TEMP">10</entry> -->
+	<!-- <entry key="ANNEAL_STOP_TEMP">2</entry> -->
+	<!-- <entry key="ANNEAL_CYCLES">10</entry> -->
 
-<!-- List of csv data files for import -->
+	<!-- List of csv data files for import -->
 	<entry key="DATA_NEEDS_CLEANING">false</entry>
 	<entry key="DATA_NEEDS_NORMALIZATION">false</entry>
 	<entry key="DATA_FILE_0">./data/BertClean.20140421.001/dat1.csv</entry>
 
-<!-- Temporal dataset -->
+	<!-- Temporal dataset -->
 	<entry key="NORMALIZED_LOW">0</entry>
 	<entry key="NORMALIZED_HIGH">1.0</entry>
 	<entry key="INPUT_WINDOW_SIZE">12</entry>
@@ -83,19 +96,19 @@
 	<entry key="TIME_LAG_1">2</entry>
 	<entry key="TIME_LAG_2">3</entry>
 
-<!-- Training -->
+	<!-- Training -->
 	<!-- Model Options -->
-		<!-- Regression -->
-		<!-- Classification -->
-		<entry key="PREDICT_MODEL">Classification</entry>
+	<!-- Regression -->
+	<!-- Classification -->
+	<entry key="PREDICT_MODEL">Classification</entry>
 	<entry key="ACTIVATION_FUNCTION">?:B->SIGMOID->25:B->SIGMOID->?</entry>
 	<entry key="TARGET_ERROR">3</entry>
-		
-<!-- Predict -->
+
+	<!-- Predict -->
 	<entry key="PREDICT_FILE">dat1</entry>
 	<entry key="PREDICT_LABEL">target</entry>
 
-<!-- Output -->
-	<entry key="PRINT_DENORMALIZED">true</entry>	
+	<!-- Output -->
+	<entry key="PRINT_DENORMALIZED">true</entry>
 
 </properties>

@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-public class PropsXML {
+public class PropsXML implements Cloneable {
 
 	/*
 	 * Reads properties from an xml file.
@@ -27,6 +27,9 @@ public class PropsXML {
 
 	// Debug printing
 	public int DEBUG_LEVEL;
+	
+	// Execution label
+	public String RUN_LABEL;
 
 	// Network setup parameters
 	public int INPUT_WINDOW;
@@ -96,6 +99,9 @@ public class PropsXML {
 
 		// Debug printing
 		DEBUG_LEVEL = GetInt("DEBUG_LEVEL");
+		
+		// Execution label
+		RUN_LABEL = GetString("RUN_LABEL");
 
 		// Network setup parameters
 		INPUT_WINDOW   = GetInt("INPUT_WINDOW");
@@ -163,7 +169,8 @@ public class PropsXML {
 		
 		// training
 		ACTIVATION_FUNCTION = GetString("ACTIVATION_FUNCTION");
-		TARGET_ERROR = GetDouble("TARGET_ERROR");
+		//removed due to not being used.. I think
+		//TARGET_ERROR = GetDouble("TARGET_ERROR");
 
 		// predict
 		PREDICT_FILE = GetString("PREDICT_FILE");
@@ -375,5 +382,14 @@ public class PropsXML {
 		System.out.println("\n\n");
 		ex.printStackTrace();
 		System.exit(-1);
+	}
+	
+	// to enable cloning or 'deep copy'
+	public Object clone(){  
+	    try{  
+	        return super.clone();  
+	    }catch(Exception e){ 
+	        return null; 
+	    }
 	}
 }

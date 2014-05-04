@@ -33,16 +33,18 @@ public class MarketTrain {
 		// Load training data and network
 		final File trainingFile = new File(dataDir, p.TRAINING_FILE);
 		final File networkFile  = new File(dataDir, p.NETWORK_FILE );
-
+		
 		if (!trainingFile.exists()) {
-			System.out.println("Can't read file: " + trainingFile.getAbsolutePath());
+			System.out.println("Can't read training file: \n" + trainingFile.getAbsolutePath());
+			System.out.println("Can't read training file: \n" + trainingFile.getPath());
 			return;
 		}
 		
 		final MLDataSet trainingSet = EncogUtility.loadEGB2Memory(trainingFile);
 
 		if (!networkFile.exists()) {
-			System.out.println("Can't read file: " + networkFile.getAbsolutePath());
+			System.out.println("Can't read network file: \n" + networkFile.getAbsolutePath());
+			System.out.println("Can't read network file: \n" + trainingFile.getPath());
 			return;
 		}
 		
@@ -226,7 +228,7 @@ public class MarketTrain {
 		// Write trained network to file
 		EncogDirectoryPersistence.saveObject(networkFile, network);
 		
-		Encog.getInstance().shutdown();
+		//Encog.getInstance().shutdown();
 
 		if (p.DEBUG_LEVEL >= 2)
 			System.out.println("  Final training error: " + network.calculateError(trainingSet));

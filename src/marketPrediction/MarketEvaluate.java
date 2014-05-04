@@ -33,6 +33,7 @@ import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.market.MarketDataDescription;
 import org.encog.ml.data.market.MarketDataType;
 import org.encog.ml.data.market.MarketMLDataSet;
+import org.encog.ml.data.market.TickerSymbol;
 import org.encog.ml.data.market.loader.MarketLoader;
 import org.encog.ml.data.market.loader.YahooFinanceLoader;
 import org.encog.neural.data.NeuralData;
@@ -52,38 +53,17 @@ public class MarketEvaluate {
 			return Direction.up;
 	}
 
-	public static MarketMLDataSet grabData() {
+	public static MarketMLDataSet grabData(PropsXML p) {
 		MarketLoader loader = new YahooFinanceLoader();
-		MarketMLDataSet result = new MarketMLDataSet(loader, Config.INPUT_WINDOW,
-				Config.PREDICT_WINDOW);
-		MarketDataDescription desc = new MarketDataDescription(Config.TICKER, MarketDataType.CLOSE,
-				true, true);
-		result.addDescription(desc);
-
-		MarketDataDescription desc2 = new MarketDataDescription(Config.TICKER2,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc2);
-
-		MarketDataDescription desc3 = new MarketDataDescription(Config.TICKER3,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc3);
-
-		MarketDataDescription desc4 = new MarketDataDescription(Config.TICKER4,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc4);
-
-		MarketDataDescription desc5 = new MarketDataDescription(Config.TICKER5,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc5);
-
-		MarketDataDescription desc6 = new MarketDataDescription(Config.TICKER6,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc6);
-
-		MarketDataDescription desc7 = new MarketDataDescription(Config.TICKER7,
-				MarketDataType.CLOSE, true, false);
-		result.addDescription(desc7);
-
+		MarketMLDataSet result = new MarketMLDataSet(loader, p.INPUT_WINDOW,
+				p.PREDICT_WINDOW);
+		
+		for (int i = 0; i < p.TICKERS.length; i++) {
+			MarketDataDescription desc = new MarketDataDescription(new TickerSymbol(p.TICKERS[i]), MarketDataType.CLOSE,
+					p.IS_INPUTS[i], p.IS_PREDICTS[i]);
+			result.addDescription(desc);
+		}
+		
 		Calendar end = new GregorianCalendar();// end today
 		Calendar begin = (Calendar) end.clone();// begin 30 days ago
 		begin.add(Calendar.DATE, -200);
@@ -95,18 +75,19 @@ public class MarketEvaluate {
 
 	}
 
-	public static void evaluate(File dataDir) {
+	public static void evaluate(PropsXML p, File dataDir, String networkFileName) {
 
-		File file = new File(dataDir, Config.NETWORK_FILE);
+		File file = new File(dataDir, networkFileName);
 
 		if (!file.exists()) {
-			System.out.println("Can't read file: " + file.getAbsolutePath());
+			System.out.println("Evaluate: Can't read file: " + file.getAbsolutePath());
+			System.out.println("Evaluate: Can't read file: " + file.getPath());
 			return;
 		}
 
 		BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(file);
 
-		MarketMLDataSet data = grabData();
+		MarketMLDataSet data = grabData(p);
 
 		DecimalFormat format = new DecimalFormat("#0.0000");
 
@@ -129,7 +110,7 @@ public class MarketEvaluate {
 
 			count++;
 
-			if (Config.DEBUG_LEVEL >= 2) {
+			if (p.DEBUG_LEVEL >= 2) {
 			String wasCorrect = (actualDirection == predictDirection) ? "++" : "--";
 			System.out.printf(
 					"Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",

@@ -28,7 +28,7 @@ public class MarketPredict__RUN {
 		MarketTrain.train(p, dataDir);
 
 		// Evalute trained network on test data
-		MarketEvaluate.evaluate(dataDir);
+		MarketEvaluate.evaluate(p, dataDir, p.NETWORK_FILE);
 
 		// Prune network
 		// MarketPrune.incremental(dataDir);

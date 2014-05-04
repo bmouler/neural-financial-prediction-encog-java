@@ -36,8 +36,8 @@ import org.encog.util.simple.EncogUtility;
 
 public class MarketPrune {
 
-	public static void incremental(File dataDir) {
-		File file = new File(dataDir, Config.TRAINING_FILE);
+	public static void incremental(PropsXML p, File dataDir) {
+		File file = new File(dataDir, p.TRAINING_FILE);
 
 		if (!file.exists()) {
 			System.out.println("Can't read file: " + file.getAbsolutePath());
@@ -59,7 +59,7 @@ public class MarketPrune {
 
 		prune.process();
 
-		File networkFile = new File(dataDir, Config.NETWORK_FILE);
+		File networkFile = new File(dataDir, p.NETWORK_FILE);
 		EncogDirectoryPersistence.saveObject(networkFile, prune.getBestNetwork());
 
 	}
