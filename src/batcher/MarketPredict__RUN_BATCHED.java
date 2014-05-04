@@ -9,6 +9,8 @@ import marketPrediction.PropsXML;
 
 import org.encog.Encog;
 
+import com.google.gson.Gson;
+
 import MiniThreadManager.MiniThread;
 
 /**
@@ -31,7 +33,13 @@ public class MarketPredict__RUN_BATCHED extends MiniThread {
 		if (p.USE_LOG_FILE) {
 			IOHelper.writeStringToNewFile(DATA_DIR + "/" + p.LOG_FILE_NAME, "");
 		}
-		
+
+		// write out JSON file of the PropsXML in case we want it later
+		// note: we could load this object back in with this json
+		Gson gson = new Gson();
+		String json = gson.toJson(p);
+		IOHelper.writeStringToNewFile(DATA_DIR + "/PropsXML.json", json);
+
 		// Declare directory where to write/read results
 		File dataDir = new File(DATA_DIR);
 
