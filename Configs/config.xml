@@ -110,7 +110,7 @@
 
 	<!-- Output -->
 	<entry key="PRINT_DENORMALIZED">true</entry>
-	<entry key="USE_LOG_FILE">true</entry>
+	<entry key="USE_LOG_FILE">false</entry>
 	<entry key="LOG_FILE_NAME">log.txt</entry>
 
 </properties>

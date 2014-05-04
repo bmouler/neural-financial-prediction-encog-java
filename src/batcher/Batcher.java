@@ -1,8 +1,12 @@
 package batcher;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,8 +26,8 @@ public class Batcher {
 
 	final static String WORKING_DIR = "./Configs/BatcherTest"; // no backslash
 	final static String DATA_DIR = "./data/MarketPredict"; // no backslash
-	final static String BATCHER_PROPS_FILE = "batcherConfig.xml";
-	final static String BASE_PROPS_FILE = "baseConfig.xml";
+	final static String BATCHER_PROPS_FILE = "batcherConfig.xml"; //must be in WORKING_DIR
+	final static String BASE_PROPS_FILE = "baseConfig.xml"; //must be in WORKING_DIR
 
 	static List<PropsXML> propsList = new ArrayList<PropsXML>();
 	private static String now;
@@ -93,6 +97,12 @@ public class Batcher {
 			System.out.println("Created " + propsList.size() + " directories");
 		if (pb.DEBUG_LEVEL >= 1)
 			System.out.println("Finished creating directories.");
+		
+		// copy the configs into the working dir
+		copyFile(new File(WORKING_DIR + "/" + BATCHER_PROPS_FILE), new File(outputDir + "/"
+				+ BATCHER_PROPS_FILE));
+		copyFile(new File(WORKING_DIR + "/" + BASE_PROPS_FILE), new File(outputDir + "/"
+				+ BASE_PROPS_FILE));
 		tracker.stop("make working directories");
 
 		// run everything with MiniThreadManager
@@ -152,6 +162,28 @@ public class Batcher {
 		// TODO print out the times to complete the tasks
 	}
 
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+		if (!destFile.exists()) {
+			destFile.createNewFile();
+		}
+
+		FileChannel source = null;
+		FileChannel destination = null;
+
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		} finally {
+			if (source != null) {
+				source.close();
+			}
+			if (destination != null) {
+				destination.close();
+			}
+		}
+	}
+
 	public static String processSummary(String s) {
 		String out = "";
 
@@ -177,7 +209,7 @@ public class Batcher {
 			if (values.length >= 3) {
 				sl.percent = values[3];
 			}
-			
+
 			list.add(sl);
 		}
 
