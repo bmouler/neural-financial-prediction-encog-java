@@ -94,6 +94,8 @@ public class PropsXML implements Cloneable {
 
 	// output
 	public boolean PRINT_DENORMALIZED;
+	public boolean USE_LOG_FILE;
+	public String LOG_FILE_NAME;
 
 	public void InitializeValues() {
 
@@ -178,6 +180,8 @@ public class PropsXML implements Cloneable {
 
 		// output
 		PRINT_DENORMALIZED = GetBool("PRINT_DENORMALIZED");
+		USE_LOG_FILE = GetBool("USE_LOG_FILE");
+		LOG_FILE_NAME = GetString("LOG_FILE_NAME");
 	}
 
 	// constructor

@@ -20,6 +20,8 @@ import org.encog.neural.networks.training.propagation.scg.ScaledConjugateGradien
 import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.simple.EncogUtility;
 
+import batcher.IOHelper;
+
 /**
  * Load the training data from an Encog file and train it.
  */
@@ -27,60 +29,78 @@ public class MarketTrain {
 
 	public static void train(PropsXML p, File dataDir) {
 
-		if (p.DEBUG_LEVEL >= 1)
-			System.out.println("Training network...");
-		
-		// Load training data and network
-		final File trainingFile = new File(dataDir, p.TRAINING_FILE);
-		final File networkFile  = new File(dataDir, p.NETWORK_FILE );
-		
-		if (!trainingFile.exists()) {
-			System.out.println("Can't read training file: \n" + trainingFile.getAbsolutePath());
-			System.out.println("Can't read training file: \n" + trainingFile.getPath());
+		if (p.DEBUG_LEVEL >= 1) {
+			String s = "Training network...";
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
 			return;
 		}
-		
+
+		// Load training data and network
+		final File trainingFile = new File(dataDir, p.TRAINING_FILE);
+		final File networkFile = new File(dataDir, p.NETWORK_FILE);
+
+		if (!trainingFile.exists()) {
+			String s = "Can't read training file: \n" + trainingFile.getAbsolutePath();
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
+			return;
+		}
+
 		final MLDataSet trainingSet = EncogUtility.loadEGB2Memory(trainingFile);
 
 		if (!networkFile.exists()) {
-			System.out.println("Can't read network file: \n" + networkFile.getAbsolutePath());
-			System.out.println("Can't read network file: \n" + trainingFile.getPath());
+			String s = "Can't read network file: \n" + networkFile.getAbsolutePath();
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
 			return;
 		}
-		
-		BasicNetwork network = (BasicNetwork)EncogDirectoryPersistence.loadObject(networkFile);
+
+		BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(networkFile);
 
 		// Train neural network
-		
+
 		// use the below for TIMED training
-		// also can be run like so EncogUtility.trainConsole(train, network, trainingSet, Config.TRAINING_MINUTES); where train is one of the below objects
-//		EncogUtility.trainConsole(network, trainingSet, Config.TRAINING_MINUTES);
-		
+		// also can be run like so EncogUtility.trainConsole(train, network, trainingSet,
+		// Config.TRAINING_MINUTES); where train is one of the below objects
+		// EncogUtility.trainConsole(network, trainingSet, Config.TRAINING_MINUTES);
+
 		// Train via back propagation
 		if (p.TRAIN_ALG.toUpperCase().equals("BPROP")) {
-			
+
 			// backprop training (not working: NaN error)
-			Backpropagation train =
-				new Backpropagation(network, trainingSet, p.BPROP_LEARNING_RATE, p.BPROP_MOMENTUM);
-			
+			Backpropagation train = new Backpropagation(network, trainingSet,
+					p.BPROP_LEARNING_RATE, p.BPROP_MOMENTUM);
+
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		// Train via resilient propagation
 		else if (p.TRAIN_ALG.toUpperCase().equals("RPROP")) {
-			
+
 			ResilientPropagation train = new ResilientPropagation(network, trainingSet);
-			
+
 			// Choose RPROP type
 			if (p.RPROP_TYPE.equals("RPROPp"))
 				train.setRPROPType(RPROPType.RPROPp);
@@ -90,80 +110,102 @@ public class MarketTrain {
 				train.setRPROPType(RPROPType.iRPROPm);
 			else
 				train.setRPROPType(RPROPType.iRPROPp); // default is best one
-			
+
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
 
 		// Train via quick propagation
 		else if (p.TRAIN_ALG.toUpperCase().equals("QPROP")) {
-			
+
 			// quickprop training (not working)
 			// TODO: flags for learning rate, default = 2
-			QuickPropagation train = new QuickPropagation(network, trainingSet, p.QPROP_LEARNING_RATE);
+			QuickPropagation train = new QuickPropagation(network, trainingSet,
+					p.QPROP_LEARNING_RATE);
 
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		// Train via Manhattan propagation
 		else if (p.TRAIN_ALG.toUpperCase().equals("MPROP")) {
-			
+
 			// Manhattan update rule training (not working: NaN error)
 			// TODO: multiple flags for Manhattan propagation options
-			ManhattanPropagation train = new ManhattanPropagation(network, trainingSet, p.MPROP_LEARNING_RATE);
-			
+			ManhattanPropagation train = new ManhattanPropagation(network, trainingSet,
+					p.MPROP_LEARNING_RATE);
+
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		// Train via Levenberg Marquardt propagation
 		else if (p.TRAIN_ALG.toUpperCase().equals("LPROP")) {
-			
+
 			// LMA training (not working: memory error)
 			// not working because of memory error?
 			LevenbergMarquardtTraining train = new LevenbergMarquardtTraining(network, trainingSet);
-			
+
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		// Train via scaled conjugate gradient propagation
 		else if (p.TRAIN_ALG.toUpperCase().equals("SPROP")) {
 
@@ -174,66 +216,92 @@ public class MarketTrain {
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+							train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		else if (p.TRAIN_ALG.toUpperCase().equals("GENETIC")) {
 
 			// genetic algorithm training
 			// TODO: where is this package!?
 			// TODO: add variables for GA options
-			//CalculateScore score = new TrainingSetScore(trainingSet);
-			//MLTrain train = new NeuralGeneticAlgorithm(network, new NguyenWidrowRandomizer(), score, 5000, 0.1, 0.25);
+			// CalculateScore score = new TrainingSetScore(trainingSet);
+			// MLTrain train = new NeuralGeneticAlgorithm(network, new NguyenWidrowRandomizer(),
+			// score, 5000, 0.1, 0.25);
 
-//			// Train network
-//			int numIters = 0;
-//			do {
-//				train.iteration();
-//				
-//				++numIters;
-//				
-//				if (p.DEBUG_LEVEL >= 2) {
-//					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
-//				}
-//			} while (train.getError() > p.TRAIN_THRESH);
+			// // Train network
+			// int numIters = 0;
+			// do {
+			// train.iteration();
+			//
+			// ++numIters;
+			//
+			// if (p.DEBUG_LEVEL >= 2) {
+			// String s = String.format("  Iteration %4d training error: %10.6f\n", numIters,
+			// train.getError());
+			// System.out.print(s);
+			// if (p.USE_LOG_FILE) {
+			// IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			// }
+			//
+			// }
+			// } while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		else if (p.TRAIN_ALG.toUpperCase().equals("ANNEAL")) {
-		
+
 			// simulated annealing training (not working: non-decreasing error function)
 			// TODO: add variables for startingTemp, endingTemp, etc.
 			CalculateScore score = new TrainingSetScore(trainingSet);
-			MLTrain train = 
-				new NeuralSimulatedAnnealing(network, score, p.ANNEAL_START_TEMP, p.ANNEAL_STOP_TEMP, p.ANNEAL_CYCLES);
+			MLTrain train = new NeuralSimulatedAnnealing(network, score, p.ANNEAL_START_TEMP,
+					p.ANNEAL_STOP_TEMP, p.ANNEAL_CYCLES);
 
 			// Train network
 			int numIters = 0;
 			do {
 				train.iteration();
-				
+
 				++numIters;
-				
+
 				if (p.DEBUG_LEVEL >= 2) {
-					System.out.printf("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					String s = String.format("  Iteration %4d training error: %10.6f\n", numIters, train.getError());
+					System.out.print(s);
+					if (p.USE_LOG_FILE) {
+						IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+					}
 				}
 			} while (train.getError() > p.TRAIN_THRESH);
 		}
-		
+
 		// Write trained network to file
 		EncogDirectoryPersistence.saveObject(networkFile, network);
+
+		// Encog.getInstance().shutdown();
+
+		if (p.DEBUG_LEVEL >= 2) {
+			String s = "  Final training error: " + network.calculateError(trainingSet);
+			System.out.print(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
+		}
 		
-		//Encog.getInstance().shutdown();
-
-		if (p.DEBUG_LEVEL >= 2)
-			System.out.println("  Final training error: " + network.calculateError(trainingSet));
-
-		if (p.DEBUG_LEVEL >= 1)
-			System.out.println("  Done training network...");
+		if (p.DEBUG_LEVEL >= 1) {
+			String s = "  Done training network...";
+			System.out.print(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
+		}
 	}
 }

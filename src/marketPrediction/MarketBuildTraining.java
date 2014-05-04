@@ -14,6 +14,8 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.simple.EncogUtility;
 
+import batcher.IOHelper;
+
 /**
  * Build the training data for the prediction and store it in an Encog file for
  * later training.
@@ -22,8 +24,13 @@ public class MarketBuildTraining {
 
 	public static void generate(PropsXML p, File dataDir) {
 		
-		if (p.DEBUG_LEVEL >= 1)
-			System.out.println("Generating temporal data series...");
+		if (p.DEBUG_LEVEL >= 1) {
+			String s = "Generating temporal data series...";
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
+		}
 		
 		// Data will come from Yahoo! Finance
 		final MarketLoader loader = new YahooFinanceLoader();
@@ -72,15 +79,25 @@ public class MarketBuildTraining {
 
 		// Print some useful info
 		if (p.DEBUG_LEVEL >= 2) {
-			System.out.println("  Number of input data series      : " + numInputDataSeries);
-			System.out.println("  Number of input nodes            : " + market.getInputSize());
-			System.out.println("  Number of nodes in hidden layer 1: " + p.HIDDEN1_COUNT);
-			System.out.println("  Number of nodes in hidden layer 2: " + p.HIDDEN2_COUNT);
-			System.out.println("  Number of output nodes           : " + market.getIdealSize());
+			String s = 
+			"  Number of input data series      : " + numInputDataSeries + "\n" +
+			"  Number of input nodes            : " + market.getInputSize() + "\n" +
+			"  Number of nodes in hidden layer 1: " + p.HIDDEN1_COUNT + "\n" +
+			"  Number of nodes in hidden layer 2: " + p.HIDDEN2_COUNT + "\n" +
+			"  Number of output nodes           : " + market.getIdealSize() + "\n";
+			System.out.print(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
 		}
 
-		if (p.DEBUG_LEVEL >= 1)
-			System.out.println("  Done generating temporal data series...");
+		if (p.DEBUG_LEVEL >= 1) {
+			String s = "  Done generating temporal data series...";
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
+		}
 		
 	}
 }

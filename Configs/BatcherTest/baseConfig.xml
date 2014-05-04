@@ -13,12 +13,6 @@
 	<!-- Label for this execution -->
 	<entry key="RUN_LABEL">Single</entry>
 
-	<!-- Network setup parameters -->
-	<entry key="PREDICT_WINDOW">1</entry>
-	<entry key="INPUT_WINDOW">20</entry>
-	<entry key="HIDDEN1_COUNT">140</entry>
-	<entry key="HIDDEN2_COUNT">7</entry>
-
 	<!-- Data parameters -->
 	<entry key="TICKER_0">^GSPC</entry>
 	<entry key="IS_INPUT_0">true</entry>
@@ -46,17 +40,6 @@
 	<entry key="TRAINING_FILE">data.egb</entry>
 	<entry key="NETWORK_FILE">network.eg</entry>
 
-	<!-- START DO NOT SET -->
-	<!-- START DO NOT SET -->
-	<!-- START DO NOT SET -->
-	<!-- only here to make PropsXML happy, training parameters are set by Batcher.java -->
-	<!-- Training algorithm and properties -->
-	<entry key="TRAIN_THRESH">0.001</entry>
-	<entry key="TRAIN_ALG">LPROP</entry>
-	<!-- END DO NOT SET -->
-	<!-- END DO NOT SET -->
-	<!-- END DO NOT SET -->
-
 	<!-- List of csv data files for import -->
 	<entry key="DATA_NEEDS_CLEANING">false</entry>
 	<entry key="DATA_NEEDS_NORMALIZATION">false</entry>
@@ -77,5 +60,25 @@
 
 	<!-- Output -->
 	<entry key="PRINT_DENORMALIZED">true</entry>
+	<entry key="USE_LOG_FILE">true</entry>
+	<entry key="LOG_FILE_NAME">log.txt</entry>
+
+	<!-- START DO NOT SET -->
+	<!-- START DO NOT SET -->
+	<!-- START DO NOT SET -->
+	<!-- only here to make PropsXML happy, these network parameters are set 
+		by Batcher.java -->
+	<!-- Network setup parameters -->
+	<entry key="PREDICT_WINDOW">1</entry>
+	<entry key="INPUT_WINDOW">20</entry>
+	<entry key="HIDDEN1_COUNT">140</entry>
+	<entry key="HIDDEN2_COUNT">7</entry>
+	<!-- only here to make PropsXML happy, training parameters are set by Batcher.java -->
+	<!-- Training algorithm and properties -->
+	<entry key="TRAIN_THRESH">0.001</entry>
+	<entry key="TRAIN_ALG">LPROP</entry>
+	<!-- END DO NOT SET -->
+	<!-- END DO NOT SET -->
+	<!-- END DO NOT SET -->
 
 </properties>

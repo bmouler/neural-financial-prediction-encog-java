@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -59,7 +62,7 @@ public class Batcher {
 		tracker.start("inform using of how many PropsMXL were created");
 		System.out.println("Number of PropsXMLs created from " + BATCHER_PROPS_FILE + " is: "
 				+ propsList.size());
-		System.out.println("Do you want to conitue? y or n");
+		System.out.println("Do you want to continue? y or n");
 		BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));
 		String response = null;
 		try {
@@ -115,11 +118,25 @@ public class Batcher {
 		if (pb.DEBUG_LEVEL >= 1)
 			System.out.println("Starting to create summary of thread completion.");
 		// print quick summary
+		Thread.sleep(3000); // to prevent the overwriting logging from thread output
 		System.out.println("====================================");
 		System.out.println("=====All MiniThread EndMessages=====");
 		System.out.println("====================================");
+		String summary = "";
 		for (MiniThread i : threads) {
-			System.out.println(i.threadLabel + " - " + i.endMessage);
+			String threadSummary = outputDir + "/" + i.threadLabel + "/" + p.LOG_FILE_NAME;
+			String lastLine = IOHelper.getLastLinesOfFile(threadSummary, 2).replaceAll("\\n", "");
+			String s = i.threadLabel + " , " + i.endMessage + " , " + lastLine;
+			if (pb.USE_LOG_FILE) {
+				summary += s + "\n";
+			}
+		}
+
+		summary = processSummary(summary);
+		System.out.println(summary);
+
+		if (pb.USE_LOG_FILE) {
+			IOHelper.writeStringToNewFile(outputDir + "/" + pb.LOG_FILE_NAME, summary);
 		}
 		System.out.println("====================================");
 		System.out.println("====================================");
@@ -133,7 +150,51 @@ public class Batcher {
 		tracker.stop("entire app");
 
 		// TODO print out the times to complete the tasks
-		// TODO print out the location of the summary file
+	}
+
+	public static String processSummary(String s) {
+		String out = "";
+
+		// add the header manually
+		out += "threadLabel,endMessage,trials,percent\n";
+
+		// sort the lines by highest percentage
+		List<SummaryLine> list = new ArrayList<SummaryLine>();
+		String[] lines = s.split("\\n");
+		for (String line : lines) {
+			String[] values = line.split(",");
+			SummaryLine sl = new SummaryLine();
+
+			if (values.length >= 0) {
+				sl.threadLabel = values[0];
+			}
+			if (values.length >= 1) {
+				sl.endMessage = values[1];
+			}
+			if (values.length >= 2) {
+				sl.trials = values[2];
+			}
+			if (values.length >= 3) {
+				sl.percent = values[3];
+			}
+			
+			list.add(sl);
+		}
+
+		// from http://stackoverflow.com/questions/6957631/sort-java-collection
+		Comparator<SummaryLine> comparator = new Comparator<SummaryLine>() {
+			public int compare(SummaryLine c1, SummaryLine c2) {
+				return c2.percent.compareTo(c1.percent);
+			}
+		};
+
+		Collections.sort(list, comparator);
+
+		for (SummaryLine sl : list) {
+			out += sl.toCSV() + "\n";
+		}
+
+		return out;
 	}
 
 	/*

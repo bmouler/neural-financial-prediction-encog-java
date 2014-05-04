@@ -27,6 +27,8 @@ public class PropsXMLBatcher {
 
 	// Debug printing
 	public int DEBUG_LEVEL;
+	public boolean USE_LOG_FILE;
+	public String LOG_FILE_NAME;
 	
 	// Batching settings
 	public String BATCH_RUN_LABEL;
@@ -108,6 +110,10 @@ public class PropsXMLBatcher {
 
 		// Debug printing
 		DEBUG_LEVEL = GetInt("DEBUG_LEVEL");
+		
+		// output summary
+		USE_LOG_FILE = GetBool("USE_LOG_FILE");
+		LOG_FILE_NAME = GetString("LOG_FILE_NAME");
 		
 		// Batching settings
 		BATCH_RUN_LABEL = GetString("BATCH_RUN_LABEL");

@@ -10,15 +10,36 @@
 	<!-- 2 = print everything -->
 	<entry key="DEBUG_LEVEL">1</entry>
 
-	<!-- Batching settings -->
+	<!-- Batching settings, a label to refer to this entire batch -->
 	<entry key="BATCH_RUN_LABEL">Test</entry>
-	
+
+	<!-- Output log with summary -->	
+	<entry key="USE_LOG_FILE">true</entry>
+	<entry key="LOG_FILE_NAME">summary.csv</entry>
+
 	<!-- MiniThreadManager settings -->
-	<entry key="MTM_DEBUG_LEVEL">5</entry>
+	<entry key="MTM_DEBUG_LEVEL">2</entry>
+	<!-- number of threads to use -->
+	<!-- depending on the training method, 1 might be the best -->
+	<!-- AARON - it might be best to set this to 1 or 2 depending on how many 
+		cores you have -->
 	<entry key="MTM_MAX_THREADS_ACTIVE">6</entry>
+	<!-- time to delay printing a status message about the threads being run -->
 	<entry key="MTM_UPDATE_DELAY_IN_MILLI">10000</entry>
+	<!-- if true, will 'attempt' to kill a long running thread after it surpasses 
+		the kill time. Encog is not intended to be run in a thread, so killing does 
+		not always work as it should. SPROP and ANNEAL take longer than most algos 
+		and DELAY listening to the kill command. It is better to train them separate 
+		from the others in other batches. -->
 	<entry key="MTM_KILL_IF_LONG_RUNNING">true</entry>
-	<entry key="MTM_KILL_TIME_IN_MILLI">60000</entry>
+	<entry key="MTM_KILL_TIME_IN_MILLI">600000</entry>
+
+	<!-- Each training algo has a true/false flag. If the flag is true, that 
+		training algo will be used in this batch. -->
+	<!-- All other below settings are stepsize, start value (inclusive), and 
+		end value (inclusive) for the batch. Batcher.java will create PropsXML objects 
+		with all steps within the start and end range for all settings. Setting large 
+		step sizes will result in many jobs. -->
 
 	<!-- Network setup parameters -->
 	<entry key="PREDICT_WINDOW_STEP">1</entry>
@@ -29,10 +50,10 @@
 	<entry key="INPUT_WINDOW_END">20</entry>
 	<entry key="HIDDEN1_COUNT_STEP">25</entry>
 	<entry key="HIDDEN1_COUNT_START">0</entry>
-	<entry key="HIDDEN1_COUNT_END">50</entry>
+	<entry key="HIDDEN1_COUNT_END">25</entry>
 	<entry key="HIDDEN2_COUNT_STEP">25</entry>
 	<entry key="HIDDEN2_COUNT_START">0</entry>
-	<entry key="HIDDEN2_COUNT_END">50</entry>
+	<entry key="HIDDEN2_COUNT_END">25</entry>
 
 	<!-- Training algorithm and properties -->
 	<entry key="TRAIN_THRESH_STEP">0.001</entry>
@@ -72,6 +93,8 @@
 	<entry key="TRAIN_ALG_LPROP">false</entry>
 
 	<!-- Scaled Conjugate Gradient Propagation -->
+	<!-- Note: long running, set MTM_KILL_TIME_IN_MILLI high and run it batch 
+		alone -->
 	<entry key="TRAIN_ALG_SPROP">false</entry>
 	<entry key="SPROP_LEARNING_RATE_STEP">0.01</entry>
 	<entry key="SPROP_LEARNING_RATE_START">0.01</entry>
@@ -81,6 +104,8 @@
 	<!-- <entry key="TRAIN_ALG">GENETIC</entry> -->
 
 	<!-- Simulated Annealing -->
+	<!-- Note: long running sometimes, set MTM_KILL_TIME_IN_MILLI high and run 
+		it batch alone -->
 	<entry key="TRAIN_ALG_ANNEAL">false</entry>
 	<entry key="ANNEAL_START_TEMP_STEP">10</entry>
 	<entry key="ANNEAL_START_TEMP_START">10</entry>

@@ -101,7 +101,6 @@ public class MiniThreadManager {
 						activeThreadCount++;
 
 						// FIXME see endTime and endMessage hack
-						((MiniThread) t).endMessage = "Running successfully at last endTime.";
 						((MiniThread) t).endTime = currentTime;
 
 						if (DEBUG_LEVEL >= 5) {
@@ -158,6 +157,9 @@ public class MiniThreadManager {
 					(threadsToProcess[threadsStarted]).start();
 
 					threadsToProcess[threadsStarted].startTime = currentTime;
+
+					threadsToProcess[threadsStarted].endMessage = "Started at: "
+							+ threadsToProcess[threadsStarted].startTime;
 
 					// set the time to kill this thread if it is still running
 					if (killIfLongRunning) {

@@ -1,11 +1,110 @@
 package batcher;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IOHelper {
+
+	// from: http://stackoverflow.com/questions/686231/quickly-read-the-last-line-of-a-text-file
+	public static String getLastLinesOfFile(String fileName, int lines) {
+		File file = new File(fileName);
+		// if the file does not exist, fail
+		if (!(new File(fileName)).exists()) {
+			return null;
+		}
+
+		java.io.RandomAccessFile fileHandler = null;
+		try {
+			fileHandler = new java.io.RandomAccessFile(file, "r");
+			long fileLength = fileHandler.length() - 1;
+			StringBuilder sb = new StringBuilder();
+			int line = 0;
+
+			for (long filePointer = fileLength; filePointer != -1; filePointer--) {
+				fileHandler.seek(filePointer);
+				int readByte = fileHandler.readByte();
+
+				if (readByte == 0xA) {
+					line = line + 1;
+					if (line == lines) {
+						if (filePointer == fileLength) {
+							continue;
+						}
+						break;
+					}
+				} else if (readByte == 0xD) {
+					line = line + 1;
+					if (line == lines) {
+						if (filePointer == fileLength - 1) {
+							continue;
+						}
+						break;
+					}
+				}
+				sb.append((char) readByte);
+			}
+
+			String lastLine = sb.reverse().toString();
+			return lastLine;
+		} catch (java.io.FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (fileHandler != null) {
+				try {
+					fileHandler.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+
+	public static boolean writeStringToNewFile(String fileName, String s) {
+		// if the file exists, fail
+		if ((new File(fileName)).exists()) {
+			return false;
+		}
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(fileName);
+			out.println(s);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		// clean up
+		out.close();
+		return true;
+	}
+
+	public static boolean writeStringToFileAppend(String fileName, String s) {
+		// if the file does not exist, fail
+		if (!(new File(fileName)).exists()) {
+			return false;
+		}
+
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(fileName, true);
+			fw.write(s + "\n");
+			fw.close();
+		} catch (IOException ioe) {
+			System.err.println("IOException: " + ioe.getMessage());
+			return false;
+		}
+
+		return true;
+	}
 
 	public static File[] fileListFromDirectoryTree(String directory, String endingFilter) {
 		File rootDir = loadFile(directory);
@@ -24,7 +123,7 @@ public class IOHelper {
 				}
 			}
 		}
-		
+
 		// add the root dir in case there are files in there too
 		dirList.add(rootDir);
 
@@ -40,7 +139,7 @@ public class IOHelper {
 
 		return fileListInDirectories(files, endingFilter);
 	}
-	
+
 	public static File[] fileListInDirectories(List<File> dirs, String endingFilter) {
 		File[] filesArray = dirs.toArray(new File[dirs.size()]);
 		return fileListInDirectories(filesArray, endingFilter);
@@ -49,22 +148,21 @@ public class IOHelper {
 	private static File[] fileListInDirectories(File[] dirs, String endingFilter) {
 		List<File> files = new ArrayList<File>();
 		System.out.println(dirs.length);
-		
+
 		for (int i = 0; i < dirs.length; i++) {
-			
+
 			System.out.println(dirs[i].getPath());
-			
+
 			if (dirs[i].listFiles() == null) {
 				return null;
 			}
 			if (dirs[i].listFiles().length == 0) {
 				return null;
 			}
-			
-			
+
 			// make a list of all files to be processed
 			for (File f : dirs[i].listFiles()) {
-				
+
 				System.out.println(dirs[i].getPath());
 
 				// if the filter matches the ending
@@ -96,7 +194,7 @@ public class IOHelper {
 		String[] tagsArray = tags.toArray(new String[tags.size()]);
 		createDirectories(DEBUG_LEVEL, tagsArray, outputDir);
 	}
-	
+
 	public static void createDirectories(int DEBUG_LEVEL, String[] tags, String outputDir) {
 		for (int t = 0; t < tags.length; t++) {
 			String tagDir = outputDir + "/" + tags[t];

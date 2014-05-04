@@ -40,6 +40,8 @@ import org.encog.neural.data.NeuralData;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.persist.EncogDirectoryPersistence;
 
+import batcher.IOHelper;
+
 public class MarketEvaluate {
 
 	enum Direction {
@@ -55,15 +57,14 @@ public class MarketEvaluate {
 
 	public static MarketMLDataSet grabData(PropsXML p) {
 		MarketLoader loader = new YahooFinanceLoader();
-		MarketMLDataSet result = new MarketMLDataSet(loader, p.INPUT_WINDOW,
-				p.PREDICT_WINDOW);
-		
+		MarketMLDataSet result = new MarketMLDataSet(loader, p.INPUT_WINDOW, p.PREDICT_WINDOW);
+
 		for (int i = 0; i < p.TICKERS.length; i++) {
-			MarketDataDescription desc = new MarketDataDescription(new TickerSymbol(p.TICKERS[i]), MarketDataType.CLOSE,
-					p.IS_INPUTS[i], p.IS_PREDICTS[i]);
+			MarketDataDescription desc = new MarketDataDescription(new TickerSymbol(p.TICKERS[i]),
+					MarketDataType.CLOSE, p.IS_INPUTS[i], p.IS_PREDICTS[i]);
 			result.addDescription(desc);
 		}
-		
+
 		Calendar end = new GregorianCalendar();// end today
 		Calendar begin = (Calendar) end.clone();// begin 30 days ago
 		begin.add(Calendar.DATE, -200);
@@ -80,8 +81,11 @@ public class MarketEvaluate {
 		File file = new File(dataDir, networkFileName);
 
 		if (!file.exists()) {
-			System.out.println("Evaluate: Can't read file: " + file.getAbsolutePath());
-			System.out.println("Evaluate: Can't read file: " + file.getPath());
+			String s = "Evaluate: Can't read file: " + file.getAbsolutePath();
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
 			return;
 		}
 
@@ -111,15 +115,38 @@ public class MarketEvaluate {
 			count++;
 
 			if (p.DEBUG_LEVEL >= 2) {
-			String wasCorrect = (actualDirection == predictDirection) ? "++" : "--";
-			System.out.printf(
-					"Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",
-					count, actual, actualDirection, predict, predictDirection, diff, wasCorrect);
+				String wasCorrect = (actualDirection == predictDirection) ? "++" : "--";
+
+				String s = String
+						.format("Day %3d : actual=%8.4f (%s) : predict=%8.4f (%s) : diff=%8.4f : match= %s\n",
+								count, actual, actualDirection, predict, predictDirection, diff,
+								wasCorrect);
+
+				System.out.print(s);
+				if (p.USE_LOG_FILE) {
+					IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+				}
 			}
 		}
+
 		double percent = (double) correct / (double) count;
-		System.out.println("Direction correct:" + correct + "/" + count);
-		System.out.println("Directional Accuracy:" + format.format(percent * 100) + "%");
+
+		String s1 = "Direction correct:" + correct + "/" + count;
+		System.out.println(s1);
+		if (p.USE_LOG_FILE) {
+			IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s1);
+		}
+
+		String s2 = "Directional Accuracy:" + format.format(percent * 100) + "%";
+		System.out.println(s2);
+		if (p.USE_LOG_FILE) {
+			IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s2);
+		}
+
+		if (p.USE_LOG_FILE) {
+			String s3 = correct + "/" + count + " , " + format.format(percent * 100) + "%";
+			IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s3);
+		}
 
 	}
 }

@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.encog.Encog;
 
+import batcher.IOHelper;
+
 /**
  * Driver for one complete network training and evaluation
  */
@@ -17,6 +19,11 @@ public class MarketPredict__RUN {
 
 		// Read in properties file
 		PropsXML p = new PropsXML(WORKING_DIR, PROPS_FILE);
+		
+		// create the log file if needed
+		if (p.USE_LOG_FILE) {
+			IOHelper.writeStringToNewFile(DATA_DIR + "/" + p.LOG_FILE_NAME, "");
+		}
 		
 		// Declare directory where to write/read results
 		File dataDir = new File(DATA_DIR);

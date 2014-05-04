@@ -34,13 +34,19 @@ import org.encog.neural.prune.PruneIncremental;
 import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.simple.EncogUtility;
 
+import batcher.IOHelper;
+
 public class MarketPrune {
 
 	public static void incremental(PropsXML p, File dataDir) {
 		File file = new File(dataDir, p.TRAINING_FILE);
 
 		if (!file.exists()) {
-			System.out.println("Can't read file: " + file.getAbsolutePath());
+			String s = "Can't read file: " + file.getAbsolutePath();
+			System.out.println(s);
+			if (p.USE_LOG_FILE) {
+				IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s);
+			}
 			return;
 		}
 
