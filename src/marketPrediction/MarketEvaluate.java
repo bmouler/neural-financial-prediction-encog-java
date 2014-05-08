@@ -148,5 +148,9 @@ public class MarketEvaluate {
 			IOHelper.writeStringToFileAppend(dataDir + "/" + p.LOG_FILE_NAME, s3);
 		}
 
+		System.out.println("INPUT COUNT: "+network.getInputCount());
+		System.out.println("LAYER COUNT: "+network.getLayerCount());
+//		System.out.println("ERROR COUNT: "+network.calculateError(data));
+
 	}
 }

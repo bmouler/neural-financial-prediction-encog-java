@@ -66,26 +66,27 @@ public class MarketBuildTraining {
 		EncogUtility.saveEGB(new File(dataDir, p.TRAINING_FILE), market);
 
 		// Create a network
-		final BasicNetwork network = 
-			EncogUtility.simpleFeedForward(
-				market.getInputSize(), 
-				p.HIDDEN1_COUNT, 
-				p.HIDDEN2_COUNT, 
-				market.getIdealSize(), 
-				true
-			);
+//		final BasicNetwork network = 
+//			EncogUtility.simpleFeedForward(
+//				market.getInputSize(), 
+//				p.HIDDEN1_COUNT, 
+//				p.HIDDEN2_COUNT, 
+//				market.getIdealSize(), 
+//				true
+//			);
 		
 		// Create other kinds of networks
 //		System.out.println("The input size is: "+market.getInputSize());
 //		System.out.println("The ideal size is: "+market.getIdealSize());
-//		BasicLayer input, hidden;
-//		BasicNetwork network = new BasicNetwork();
-//		network.addLayer(input = new BasicLayer(1));
-//		network.addLayer(hidden = new BasicLayer(2));
-//		network.addLayer(new BasicLayer(1));
-//		input.setContextFedBy(hidden);
-//		network.getStructure().finalizeStructure();
-//		network.reset();
+		BasicLayer input, hidden;
+		BasicNetwork network = new BasicNetwork();
+		network.addLayer(input = new BasicLayer(market.getInputSize()));
+		network.addLayer(hidden = new BasicLayer(market.getInputSize()/2));
+		network.addLayer(new BasicLayer(market.getInputSize()/4));
+		network.addLayer(new BasicLayer(market.getInputSize()/8));
+		input.setContextFedBy(hidden);
+		network.getStructure().finalizeStructure();
+		network.reset();
 		
 		
 		// Save the network and the training
