@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.market.MarketDataDescription;
 import org.encog.ml.data.market.MarketDataType;
 import org.encog.ml.data.market.MarketMLDataSet;
@@ -12,6 +13,7 @@ import org.encog.ml.data.market.loader.MarketLoader;
 import org.encog.ml.data.market.loader.YahooFinanceLoader;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.pattern.ElmanPattern;
 import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.simple.EncogUtility;
 
@@ -79,15 +81,18 @@ public class MarketBuildTraining {
 //		System.out.println("The input size is: "+market.getInputSize());
 //		System.out.println("The ideal size is: "+market.getIdealSize());
 		BasicLayer input, hidden;
-		BasicNetwork network = new BasicNetwork();
-		network.addLayer(input = new BasicLayer(market.getInputSize()));
-		network.addLayer(hidden = new BasicLayer(market.getInputSize()/2));
-		network.addLayer(new BasicLayer(market.getInputSize()/4));
-		network.addLayer(new BasicLayer(market.getInputSize()/8));
-		input.setContextFedBy(hidden);
-		network.getStructure().finalizeStructure();
+//		BasicNetwork network = new BasicNetwork();
+		BasicNetwork network = createElmanNetwork(market);
+//		network.addLayer(input = new BasicLayer(market.getInputSize()));
+//		network.addLayer(hidden = new BasicLayer(market.getInputSize()));
+//		network.addLayer(new BasicLayer(market.getInputSize()/4));
+//		network.addLayer(new BasicLayer(market.getInputSize()/8));
+//		input.setContextFedBy(hidden);
+//		network.getStructure().finalizeStructure();
 		network.reset();
 		
+		
+
 		
 		// Save the network and the training
 		EncogDirectoryPersistence.saveObject(new File(dataDir, p.NETWORK_FILE), network);
@@ -115,4 +120,15 @@ public class MarketBuildTraining {
 		}
 		
 	}
+	// Elman network
+	static BasicNetwork createElmanNetwork(MarketMLDataSet market) {
+		  // construct an Elman type network
+		  ElmanPattern pattern = new ElmanPattern();
+		  pattern.setActivationFunction(new ActivationSigmoid());
+		  pattern.setInputNeurons(market.getInputSize());
+		  pattern.addHiddenLayer(market.getInputSize());
+		  pattern.setOutputNeurons(1);
+		  return (BasicNetwork)pattern.generate();
+		}
+	
 }

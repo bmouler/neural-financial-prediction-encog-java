@@ -38,7 +38,7 @@
 	<entry key="TICKER_6">^BKX</entry>
 	<entry key="IS_INPUT_6">true</entry>
 	<entry key="IS_PREDICT_6">false</entry>
-	<entry key="TRAIN_BEG_DAYS_AGO">7300</entry>
+	<entry key="TRAIN_BEG_DAYS_AGO">1000</entry>
 	<entry key="TRAIN_END_DAYS_AGO">200</entry>
 	<entry key="TRAINING_FILE">marketData.egb</entry>
 	<entry key="NETWORK_FILE">marketNetwork.eg</entry>
